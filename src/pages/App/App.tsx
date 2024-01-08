@@ -37,7 +37,7 @@ import {
 } from '@tabler/icons-react';
 import { OpenAI } from 'openai';
 import { Stream } from 'openai/streaming';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 import ChatCompletionMessageParam = OpenAI.ChatCompletionMessageParam;
 import ChatCompletionChunk = OpenAI.Chat.ChatCompletionChunk;
@@ -115,6 +115,14 @@ export default function App() {
     setGenerating(false);
     handlers.setState([]);
   }
+
+  // Restore history from localStorage
+  useEffect(() => {
+    const history = JSON.parse(localStorage.getItem('history') || '[]');
+    if (history.length > 0) {
+      handlers.setState(history[history.length - 1].messages);
+    }
+  }, []);
 
   return (
     <AppShell
@@ -343,6 +351,7 @@ export default function App() {
                 setGeneratingTask(completion);
 
                 let index = 0;
+                let content = '';
                 for await (const chunk of completion) {
                   const id = chunk.id;
                   const delta = chunk.choices[0].delta.content;
@@ -363,11 +372,33 @@ export default function App() {
                       );
                     }
                     index++;
+                    content += delta;
                   }
                 }
 
                 setGenerating(false);
                 setGeneratingTask(null);
+
+                const history = JSON.parse(localStorage.getItem('history') || '[]');
+                history.push({
+                  model,
+                  messages: [
+                    ...messages.map(m => ({
+                      role: m.role,
+                      content: m.content,
+                    })),
+                    {
+                      role: 'user',
+                      content: message,
+                    },
+                    {
+                      role: 'assistant',
+                      content: content,
+                    },
+                  ],
+                });
+
+                localStorage.setItem('history', JSON.stringify(history));
               })}
             >
               <Textarea
