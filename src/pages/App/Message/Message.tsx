@@ -22,7 +22,7 @@ export default function Message(props: { isLast: boolean; message: { role: strin
   );
 
   return (
-    <Group align="start" className={classes.messageContainer} gap="xs" p="md" w="100%" wrap="nowrap">
+    <Group align="start" className={classes.messageContainer} gap="xs" px="md" py="xs" w="100%" wrap="nowrap">
       {message.role === 'user' ? (
         <Avatar mih={26} miw={26} size={26} />
       ) : (
@@ -34,10 +34,10 @@ export default function Message(props: { isLast: boolean; message: { role: strin
         <Text c="white" className="select-none" fw={700}>
           {message.role === 'user' ? 'あなた' : 'ChatGPT'}
         </Text>
-        <Stack className="prose break-words lg:w-[calc(100%-115px)]" gap="xs">
+        <Stack className="lg:w-[calc(100%-115px)]" gap="xs">
           <Text
             c="gray"
-            className={classes.messageContent}
+            className={`prose break-words ${classes.messageContent}`}
             dangerouslySetInnerHTML={{
               __html: marked.parse(message.content, {
                 gfm: true,

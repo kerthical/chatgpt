@@ -36,9 +36,11 @@ import {
   IconX,
 } from '@tabler/icons-react';
 import { OpenAI } from 'openai';
+import { Stream } from 'openai/streaming';
 import { ReactNode, useState } from 'react';
 
 import ChatCompletionMessageParam = OpenAI.ChatCompletionMessageParam;
+import ChatCompletionChunk = OpenAI.Chat.ChatCompletionChunk;
 
 function Model(props: { name: string; description: string; icon: ReactNode; selected: boolean; onClick: () => void }) {
   const { name, description, icon, selected, onClick } = props;
@@ -99,12 +101,20 @@ export default function App() {
     validateInputOnChange: true,
   });
 
+  const [generatingTask, setGeneratingTask] = useState<Stream<ChatCompletionChunk> | null>(null);
   const [generating, setGenerating] = useState(false);
   const [messages, handlers] = useListState<
     ChatCompletionMessageParam & {
       id?: string;
     }
   >();
+
+  function newChat() {
+    generatingTask?.controller.abort();
+    setGeneratingTask(null);
+    setGenerating(false);
+    handlers.setState([]);
+  }
 
   return (
     <AppShell
@@ -133,7 +143,7 @@ export default function App() {
           </ActionIcon>
           <Group align="center" gap="xs">
             {!navbarOpened && (
-              <ActionIcon c="white" p={6} size="lg" variant="default" visibleFrom="sm">
+              <ActionIcon c="white" p={6} size="lg" variant="default" visibleFrom="sm" onClick={newChat}>
                 <IconEdit />
               </ActionIcon>
             )}
@@ -174,7 +184,7 @@ export default function App() {
               </Menu.Dropdown>
             </Menu>
           </Group>
-          <ActionIcon c="white" hiddenFrom="sm" size="sm" variant="transparent">
+          <ActionIcon c="white" hiddenFrom="sm" size="sm" variant="transparent" onClick={newChat}>
             <IconEdit />
           </ActionIcon>
         </Group>
@@ -193,6 +203,7 @@ export default function App() {
                   rightSection={<IconEdit size={18} />}
                   variant="subtle"
                   w="100%"
+                  onClick={newChat}
                 >
                   <Group gap="xs">
                     <Center bg="white" className="rounded-full" h={28} w={28}>
@@ -284,7 +295,7 @@ export default function App() {
             </Stack>
           ) : (
             <ScrollArea h="100%" scrollbarSize={6} w="100%">
-              <Stack align="center" px="xl" w="100%">
+              <Stack align="center" gap={0} px="xl" w="100%">
                 <Box maw={isMobile ? '100%' : '720px'} w="100%">
                   {messages.map((message, index) => (
                     <Message
@@ -329,6 +340,8 @@ export default function App() {
                   ] as ChatCompletionMessageParam[],
                 });
 
+                setGeneratingTask(completion);
+
                 let index = 0;
                 for await (const chunk of completion) {
                   const id = chunk.id;
@@ -350,10 +363,11 @@ export default function App() {
                       );
                     }
                     index++;
-                  } else {
-                    setGenerating(false);
                   }
                 }
+
+                setGenerating(false);
+                setGeneratingTask(null);
               })}
             >
               <Textarea
@@ -369,7 +383,9 @@ export default function App() {
                       size={30}
                       variant="transparent"
                       onClick={() => {
-                        // TODO: cancel generating
+                        if (generatingTask) {
+                          generatingTask.controller.abort();
+                        }
                       }}
                     >
                       <IconPlaystationCircle />
