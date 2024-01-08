@@ -37,8 +37,8 @@ export default function Login() {
           onSubmit={form.onSubmit(async ({ apiKey }) => {
             try {
               setLoading(true);
-              const openAI = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
-              await openAI.models.list();
+              const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+              await openai.models.list();
               localStorage.setItem('apiKey', apiKey);
               window.location.reload();
             } catch (e) {
@@ -59,7 +59,7 @@ export default function Login() {
           <Button
             fullWidth
             bg="#3c46ff"
-            disabled={!form.isValid('apiKey')}
+            disabled={!form.isValid()}
             loading={loading}
             radius="lg"
             size="lg"

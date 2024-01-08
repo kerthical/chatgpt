@@ -1,10 +1,25 @@
+import 'highlight.js/styles/github-dark.css';
 import * as classes from '@/pages/App/Message/Message.css.ts';
 import { ActionIcon, Avatar, Center, Group, Stack, Text } from '@mantine/core';
 import { IconBrandOpenai, IconClipboard, IconEdit, IconReload } from '@tabler/icons-react';
-import { marked } from 'marked';
+import hljs from 'highlight.js';
+import { Marked } from 'marked';
+import { markedHighlight } from 'marked-highlight';
 
 export default function Message(props: { isLast: boolean; message: { role: string; content: string } }) {
   const { message, isLast } = props;
+  const marked = new Marked(
+    markedHighlight({
+      highlight(code, lang, _info) {
+        return lang && hljs.getLanguage(lang)
+          ? hljs.highlight(code, {
+              language: lang,
+              ignoreIllegals: true,
+            }).value
+          : code;
+      },
+    }),
+  );
 
   return (
     <Group align="start" className={classes.messageContainer} gap="xs" p="md" w="100%" wrap="nowrap">
@@ -19,14 +34,14 @@ export default function Message(props: { isLast: boolean; message: { role: strin
         <Text c="white" className="select-none" fw={700}>
           {message.role === 'user' ? 'あなた' : 'ChatGPT'}
         </Text>
-        <Stack className="break-words lg:w-[calc(100%-115px)]" gap="xs">
+        <Stack className="prose break-words lg:w-[calc(100%-115px)]" gap="xs">
           <Text
             c="gray"
             className={classes.messageContent}
             dangerouslySetInnerHTML={{
-              __html: marked(message.content, {
+              __html: marked.parse(message.content, {
                 gfm: true,
-                pedantic: true,
+                breaks: true,
               }),
             }}
           />

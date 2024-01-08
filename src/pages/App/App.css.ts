@@ -162,6 +162,7 @@ export const sidebarChevronLowerClosed = style([
 ]);
 
 export const sendButton = style({
+  zIndex: 10,
   background: 'white',
   outline: '1px solid',
   outlineColor: 'white',
@@ -171,6 +172,7 @@ export const sendButton = style({
   },
   ':disabled': {
     background: 'rgba(255, 255, 255, 0.1)',
+    outlineColor: 'rgba(255, 255, 255, 0.1)',
   },
 });
 
