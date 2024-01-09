@@ -1,20 +1,23 @@
-import { useGenerate } from '@/hooks/useGenerate.ts';
+import { useGenerate } from '@/hooks/useGenerate.tsx';
 import { useMessages } from '@/hooks/useMessages.ts';
 import { useModel } from '@/hooks/useModel.ts';
 import { History } from '@/types/History.ts';
-import { useListState } from '@mantine/hooks';
-import { useEffect, useState } from 'react';
+import { atom, useAtom } from 'jotai';
+import { useEffect } from 'react';
+
+const selectedHistoryAtom = atom<string | null>(null);
+const historiesAtom = atom<History[]>([]);
 
 export function useHistories() {
-  const [selectedHistoryId, setSelectedHistoryId] = useState<string | null>();
-  const [histories, historyHandlers] = useListState<History>();
+  const [selectedHistoryId, setSelectedHistoryId] = useAtom(selectedHistoryAtom);
+  const [histories, setHistories] = useAtom(historiesAtom);
   const { selectModel } = useModel();
-  const { messageHandlers } = useMessages();
-  const { cancelGeneration } = useGenerate();
+  const { setMessages } = useMessages();
   const selectedHistory = histories.find(h => h.id === selectedHistoryId);
+  const { cancelGeneration } = useGenerate(selectedHistory, setSelectedHistoryId, setHistories);
 
   useEffect(() => {
-    historyHandlers.setState(JSON.parse(localStorage.getItem('history') || '[]'));
+    setHistories(JSON.parse(localStorage.getItem('history') || '[]'));
   }, []);
 
   useEffect(() => {
@@ -28,20 +31,20 @@ export function useHistories() {
 
     if (selected) {
       document.title = `ChatGPT - ${selected.name}`;
-      messageHandlers.setState(selected.messages);
+      setMessages(selected.messages);
       selectModel(selected.model);
     }
   }, [selectedHistoryId]);
 
   return {
     histories,
-    historyHandlers,
+    setHistories,
     selectedHistory,
     selectHistory: setSelectedHistoryId,
     newHistory: () => {
       cancelGeneration();
       setSelectedHistoryId(null);
-      messageHandlers.setState([]);
+      setMessages([]);
     },
   };
 }

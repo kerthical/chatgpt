@@ -1,19 +1,26 @@
-import { useHistories } from '@/hooks/useHistories.ts';
 import { useMessages } from '@/hooks/useMessages.ts';
 import { useModel } from '@/hooks/useModel.ts';
+import { History } from '@/types/History.ts';
 import { Message, toOpenAIMessage } from '@/types/Message.ts';
 import { notifications } from '@mantine/notifications';
+import { IconCircleX } from '@tabler/icons-react';
+import { atom, useAtom } from 'jotai';
 import { OpenAI } from 'openai';
 import { Stream } from 'openai/streaming';
-import { useState } from 'react';
 
 import ChatCompletionChunk = OpenAI.Chat.ChatCompletionChunk;
 
-export function useGenerate() {
-  const [isGenerating, setGenerating] = useState(false);
-  const [generationTask, setGenerationTask] = useState<Stream<ChatCompletionChunk> | null>(null);
-  const { selectedHistory, historyHandlers, selectHistory } = useHistories();
-  const { messageHandlers } = useMessages();
+const isGeneratingAtom = atom(false);
+const generationTaskAtom = atom<Stream<ChatCompletionChunk> | null>(null);
+
+export function useGenerate(
+  selectedHistory: History | null | undefined,
+  selectHistory: (id: string) => void,
+  setHistories: (histories: History[]) => void,
+) {
+  const [isGenerating, setGenerating] = useAtom(isGeneratingAtom);
+  const [generationTask, setGenerationTask] = useAtom(generationTaskAtom);
+  const { setMessages } = useMessages();
   const { model } = useModel();
 
   function cancelGeneration() {
@@ -31,7 +38,7 @@ export function useGenerate() {
         dangerouslyAllowBrowser: true,
       });
 
-      messageHandlers.setState(messages);
+      setMessages(messages);
 
       const completion = await openai.chat.completions.create({
         model: model!.id,
@@ -50,18 +57,24 @@ export function useGenerate() {
         const delta = chunk.choices[0].delta.content;
         if (delta) {
           if (index === 0) {
-            messageHandlers.append({
-              id,
-              role: 'assistant',
-              content: delta,
-            });
+            setMessages(prev => [
+              ...prev,
+              {
+                id,
+                role: 'assistant',
+                content: delta,
+              },
+            ]);
           } else {
-            messageHandlers.applyWhere(
-              item => item.id === id,
-              item => ({
-                ...item,
-                content: item.content + delta,
-              }),
+            setMessages(prev =>
+              prev.map(item =>
+                item.id === id
+                  ? {
+                      ...item,
+                      content: item.content + delta,
+                    }
+                  : item,
+              ),
             );
           }
           index++;
@@ -100,18 +113,19 @@ export function useGenerate() {
         savedHistory.push({
           id,
           name: summarizeCompletion.choices[0].message.content,
-          model,
+          model: model?.id,
           messages: conversation,
         });
         selectHistory(id);
       }
 
-      historyHandlers.setState(savedHistory);
-      localStorage.setItem('history', JSON.stringify(savedHistory));
+      setHistories(savedHistory);
     } catch (e) {
       notifications.show({
-        title: 'An error occurred while generating the message.',
-        message: 'Error details have been logged to the console.',
+        color: 'red',
+        title: 'エラー',
+        message: 'メッセージの生成中にエラーが発生しました。エラーの詳細はコンソールに記録されました。',
+        icon: <IconCircleX size={24} />,
       });
       console.error(e);
     } finally {

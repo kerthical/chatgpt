@@ -1,5 +1,6 @@
 import * as classes from '@/pages/App/Main/Main.css.ts';
-import { useGenerate } from '@/hooks/useGenerate.ts';
+import { useGenerate } from '@/hooks/useGenerate.tsx';
+import { useHistories } from '@/hooks/useHistories.ts';
 import { useMessages } from '@/hooks/useMessages.ts';
 import { useNavbar } from '@/hooks/useNavbar.ts';
 import Message from '@/pages/App/Main/Message/Message.tsx';
@@ -10,8 +11,9 @@ import { IconArrowUp, IconBrandOpenai, IconPlaystationCircle } from '@tabler/ico
 
 export function Main() {
   const { isNavbarOpened, toggleNavbar } = useNavbar();
-  const { messages, messageHandlers } = useMessages();
-  const { generate, isGenerating, cancelGeneration } = useGenerate();
+  const { messages, setMessages } = useMessages();
+  const { selectedHistory, selectHistory, setHistories } = useHistories();
+  const { generate, isGenerating, cancelGeneration } = useGenerate(selectedHistory, selectHistory, setHistories);
   const form = useForm({
     initialValues: {
       message: '',
@@ -73,12 +75,12 @@ export function Main() {
                     onEdit={async newContent => {
                       const newState = messages.slice(0, i + 1);
                       newState[i].content = newContent;
-                      messageHandlers.setState(newState);
+                      setMessages(newState);
                       await generate(newState);
                     }}
                     onReload={async () => {
                       const newState = messages.slice(0, i);
-                      messageHandlers.setState(newState);
+                      setMessages(newState);
                       await generate(newState);
                     }}
                   />

@@ -1,11 +1,12 @@
 import { Message } from '@/types/Message.ts';
-import { useListState } from '@mantine/hooks';
+import { atom, useAtom } from 'jotai';
 
+const messagesAtom = atom<Message[]>([]);
 export function useMessages() {
-  const [messages, messageHandlers] = useListState<Message>();
+  const [messages, setMessages] = useAtom(messagesAtom);
 
   return {
     messages,
-    messageHandlers,
+    setMessages,
   };
 }

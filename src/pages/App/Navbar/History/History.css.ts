@@ -31,7 +31,10 @@ export const historyUnselected = style([
   {
     background: 'transparent',
     ':hover': {
-      background: 'rgba(255, 255, 255, 0.1)',
+      background: '#262626',
+    },
+    ':active': {
+      background: '#1f1f1f',
     },
   },
 ]);
@@ -71,6 +74,11 @@ export const historyOverlayUnselected = style([
     background: 'linear-gradient(to left, black 40%, transparent)',
     selectors: {
       [`${history}:hover &`]: {
+        background: 'linear-gradient(to left, #262626 40%, transparent)',
+        width: '80px',
+      },
+      [`${history}:active &`]: {
+        background: 'linear-gradient(to left, #1f1f1f 40%, transparent)',
         width: '80px',
       },
     },

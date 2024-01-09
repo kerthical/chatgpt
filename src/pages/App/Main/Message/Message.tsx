@@ -1,7 +1,7 @@
 import 'highlight.js/styles/github-dark.css';
 import * as classes from '@/pages/App/Main/Message/Message.css.ts';
 import { Message as MessageType } from '@/types/Message.ts';
-import { ActionIcon, Avatar, Button, Center, Group, Image, Stack, Text, Textarea } from '@mantine/core';
+import { ActionIcon, Avatar, Button, Center, Group, Image, Stack, Text, Textarea, Tooltip } from '@mantine/core';
 import { IconBrandOpenai, IconClipboard, IconEdit, IconReload } from '@tabler/icons-react';
 import hljs from 'highlight.js';
 import { Marked } from 'marked';
@@ -112,20 +112,24 @@ export default function Message(props: {
                 </>
               ) : (
                 <>
-                  <ActionIcon
-                    c="gray"
-                    size={20}
-                    variant="transparent"
-                    onClick={async () => {
-                      await navigator.clipboard.writeText(renderContent);
-                    }}
-                  >
-                    <IconClipboard />
-                  </ActionIcon>
-                  {isLast && (
-                    <ActionIcon c="gray" size={20} variant="transparent" onClick={onReload}>
-                      <IconReload />
+                  <Tooltip withArrow bg="black" c="white" fw={700} label="Copy" position="bottom">
+                    <ActionIcon
+                      c="gray"
+                      size={20}
+                      variant="transparent"
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(renderContent);
+                      }}
+                    >
+                      <IconClipboard />
                     </ActionIcon>
+                  </Tooltip>
+                  {isLast && (
+                    <Tooltip withArrow bg="black" c="white" fw={700} label="Regenerate" position="bottom">
+                      <ActionIcon c="gray" size={20} variant="transparent" onClick={onReload}>
+                        <IconReload />
+                      </ActionIcon>
+                    </Tooltip>
                   )}
                 </>
               )}

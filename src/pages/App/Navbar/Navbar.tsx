@@ -5,13 +5,14 @@ import { useResponsive } from '@/hooks/useResponsive.ts';
 import History from '@/pages/App/Navbar/History/History.tsx';
 import { ActionIcon, AppShell, Avatar, Box, Button, Center, Group, Menu, Modal, Stack, Text } from '@mantine/core';
 import { useClickOutside, useDisclosure } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
 import { IconBrandOpenai, IconEdit, IconLogout, IconSettings, IconX } from '@tabler/icons-react';
 import { useState } from 'react';
 
 export function Navbar() {
   const { isMobile } = useResponsive();
   const { closeNavbar, toggleNavbar } = useNavbar();
-  const { histories, newHistory, historyHandlers } = useHistories();
+  const { histories, newHistory, setHistories } = useHistories();
   const [modalOpened, { open: openModal, close: closeModal }] = useDisclosure(false);
   const [accountMenuOpened, setAccountMenuOpened] = useState(false);
   const navbarRef = useClickOutside(() => isMobile && closeNavbar());
@@ -22,8 +23,13 @@ export function Navbar() {
         <Button
           fullWidth
           onClick={() => {
+            notifications.show({
+              color: 'blue',
+              title: '成功',
+              message: '会話履歴をすべて削除しました。',
+            });
             localStorage.removeItem('history');
-            historyHandlers.setState([]);
+            setHistories([]);
           }}
         >
           会話履歴をすべて削除

@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function History(props: { history: HistoryType }) {
   const { history } = props;
-  const { histories, selectedHistory, selectHistory, historyHandlers, newHistory } = useHistories();
+  const { histories, selectedHistory, selectHistory, setHistories, newHistory } = useHistories();
   const editInputRef = useRef<HTMLInputElement>(null);
   const [historyName, setHistoryName] = useState(history.name);
   const [isEditing, setIsEditing] = useState(false);
@@ -20,7 +20,7 @@ export default function History(props: { history: HistoryType }) {
 
   function onDelete() {
     const newState = histories.slice().filter(h => h.id !== history.id);
-    historyHandlers.setState(newState);
+    setHistories(newState);
     if (history.id === selectedHistory?.id) {
       newHistory();
     }
@@ -49,7 +49,7 @@ export default function History(props: { history: HistoryType }) {
             if (event.keyCode === 13) {
               const newState = histories.slice();
               newState.find(h => h.id === history.id)!.name = historyName;
-              historyHandlers.setState(newState);
+              setHistories(newState);
               setIsEditing(false);
             } else if (event.key === 'Escape') {
               setHistoryName(history.name);
@@ -76,7 +76,7 @@ export default function History(props: { history: HistoryType }) {
             right={0}
             top={0}
           >
-            <Menu position="bottom-start" width={200}>
+            <Menu position="bottom-start" width={220}>
               <Menu.Target>
                 <ActionIcon c="gray" size={20} variant="transparent" onClick={e => e.stopPropagation()}>
                   <IconDots />
