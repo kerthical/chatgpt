@@ -1,33 +1,38 @@
-import * as classes from '@/pages/App/History/History.css.ts';
+import * as classes from '@/pages/App/Navbar/History/History.css.ts';
+import { useHistories } from '@/hooks/useHistories.ts';
+import { History as HistoryType } from '@/types/History.ts';
 import { ActionIcon, Box, Group, Menu, Text, TextInput } from '@mantine/core';
 import { IconArchive, IconDots, IconEdit, IconTrash } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 
-export default function History(props: {
-  selectedHistoryId: string | null | undefined;
-  name: string;
-  selected: boolean;
-  onClick: () => void;
-  onRename: (newHistoryName: string) => void;
-  onRemove: () => void;
-}) {
-  const { selectedHistoryId, name, selected, onClick, onRename, onRemove } = props;
+export default function History(props: { history: HistoryType }) {
+  const { history } = props;
+  const { histories, selectedHistory, selectHistory, historyHandlers, newHistory } = useHistories();
   const editInputRef = useRef<HTMLInputElement>(null);
-  const [historyName, setHistoryName] = useState(name);
+  const [historyName, setHistoryName] = useState(history.name);
   const [isEditing, setIsEditing] = useState(false);
+  const isSelected = selectedHistory?.id === history.id;
 
   useEffect(() => {
-    setHistoryName(name);
+    setHistoryName(history.name);
     setIsEditing(false);
-  }, [selectedHistoryId]);
+  }, [selectedHistory]);
+
+  function onDelete() {
+    const newState = histories.slice().filter(h => h.id !== history.id);
+    historyHandlers.setState(newState);
+    if (history.id === selectedHistory?.id) {
+      newHistory();
+    }
+  }
 
   return (
     <Box
-      className={selected && !isEditing ? classes.historySelected : classes.historyUnselected}
+      className={isSelected && !isEditing ? classes.historySelected : classes.historyUnselected}
       component="a"
       h={36}
       p={isEditing ? 0 : 6}
-      onClick={onClick}
+      onClick={() => selectHistory(history.id)}
     >
       {isEditing ? (
         <TextInput
@@ -42,10 +47,12 @@ export default function History(props: {
           }}
           onKeyDown={event => {
             if (event.keyCode === 13) {
-              onRename(historyName);
+              const newState = histories.slice();
+              newState.find(h => h.id === history.id)!.name = historyName;
+              historyHandlers.setState(newState);
               setIsEditing(false);
             } else if (event.key === 'Escape') {
-              setHistoryName(name);
+              setHistoryName(history.name);
               setIsEditing(false);
             }
           }}
@@ -55,14 +62,14 @@ export default function History(props: {
           <Group align="center" gap={4} w="100%">
             <Box className="relative h-full w-full grow overflow-hidden whitespace-nowrap">
               <Text c="white" className="h-full w-full" size="sm" ta="left">
-                {name}
+                {history.name}
               </Text>
-              <div className={selected ? classes.historyOverlaySelected : classes.historyOverlayUnselected} />
+              <div className={isSelected ? classes.historyOverlaySelected : classes.historyOverlayUnselected} />
             </Box>
           </Group>
           <Group
             bottom={0}
-            className={selected ? classes.historyActionsSelected : classes.historyActionsUnselected}
+            className={isSelected ? classes.historyActionsSelected : classes.historyActionsUnselected}
             gap={3}
             mr="xs"
             pos="absolute"
@@ -92,7 +99,7 @@ export default function History(props: {
                   c="red"
                   className={classes.historyMenuItem}
                   leftSection={<IconTrash size={18} />}
-                  onClick={onRemove}
+                  onClick={onDelete}
                 >
                   チャットを削除
                 </Menu.Item>
@@ -104,7 +111,7 @@ export default function History(props: {
               variant="transparent"
               onClick={e => {
                 e.stopPropagation();
-                onRemove();
+                onDelete();
               }}
             >
               <IconArchive />

@@ -1,18 +1,16 @@
 import 'highlight.js/styles/github-dark.css';
-import * as classes from '@/pages/App/Message/Message.css.ts';
+import * as classes from '@/pages/App/Main/Message/Message.css.ts';
+import { Message as MessageType } from '@/types/Message.ts';
 import { ActionIcon, Avatar, Button, Center, Group, Image, Stack, Text, Textarea } from '@mantine/core';
 import { IconBrandOpenai, IconClipboard, IconEdit, IconReload } from '@tabler/icons-react';
 import hljs from 'highlight.js';
 import { Marked } from 'marked';
 import { markedHighlight } from 'marked-highlight';
-import { OpenAI } from 'openai';
 import { useState } from 'react';
-
-import ChatCompletionMessageParam = OpenAI.ChatCompletionMessageParam;
 
 export default function Message(props: {
   isLast: boolean;
-  message: ChatCompletionMessageParam & { id: string };
+  message: MessageType;
   onEdit: (newContent: string) => void;
   onReload: () => void;
 }) {
