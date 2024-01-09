@@ -1,7 +1,8 @@
 import 'highlight.js/styles/github-dark.css';
 import * as classes from '@/pages/App/Main/Message/Message.css.ts';
 import { Message as MessageType } from '@/types/Message.ts';
-import { ActionIcon, Avatar, Button, Center, Group, Image, Stack, Text, Textarea, Tooltip } from '@mantine/core';
+import { ActionIcon, Avatar, Box, Button, Center, Group, Image, Stack, Text, Textarea, Tooltip } from '@mantine/core';
+import { modals } from '@mantine/modals';
 import { IconBrandOpenai, IconClipboard, IconEdit, IconReload } from '@tabler/icons-react';
 import hljs from 'highlight.js';
 import { Marked } from 'marked';
@@ -28,15 +29,26 @@ export default function Message(props: {
     }),
   );
 
-  const image = Array.isArray(message.content) ? message.content.find(c => c.type === 'image_url') : undefined;
-  const image_url = image?.type === 'image_url' ? image.image_url.url : undefined;
-  const renderContent = Array.isArray(message.content)
-    ? message.content[0]!.type === 'text'
-      ? message.content[0]!.text
-      : ''
+  const images = Array.isArray(message.content)
+    ? message.content
+        .filter(c => c.type === 'image_url')
+        .map(
+          c =>
+            c as {
+              type: 'image_url';
+              image_url: {
+                url: string;
+                detail: 'high';
+              };
+            },
+        )
+    : [];
+
+  const textContent = Array.isArray(message.content)
+    ? (message.content.find(c => c.type === 'text') as { type: 'text'; text: string }).text
     : message.content ?? '';
 
-  const [content, setContent] = useState(renderContent);
+  const [editingContent, setEditingContent] = useState(textContent);
   const [isEditing, setIsEditing] = useState(false);
 
   return (
@@ -56,14 +68,13 @@ export default function Message(props: {
           {isEditing ? (
             <Textarea
               autosize
-              leftSection={image_url && <Avatar src={image_url} />}
-              value={content}
-              onChange={e => setContent(e.currentTarget.value)}
+              value={editingContent}
+              onChange={e => setEditingContent(e.currentTarget.value)}
               onKeyDown={e => {
                 if (e.keyCode === 13 && e.ctrlKey) {
                   e.preventDefault();
                   setIsEditing(false);
-                  onEdit(content);
+                  onEdit(editingContent);
                 }
               }}
             />
@@ -73,13 +84,34 @@ export default function Message(props: {
                 c="gray"
                 className={`prose prose-invert break-words ${classes.messageContent}`}
                 dangerouslySetInnerHTML={{
-                  __html: marked.parse(renderContent, {
+                  __html: marked.parse(textContent, {
                     gfm: true,
                     breaks: true,
                   }),
                 }}
               />
-              {image_url && <Image radius="md" src={image_url} />}
+              {images.length > 0 && (
+                <Group h={256} w="100%">
+                  {images.map((image, i) => (
+                    <Box key={i} bg="dark.8" className={classes.messageFileContainer} h="100%">
+                      <Image
+                        className={classes.messageFileImage}
+                        h="100%"
+                        radius="md"
+                        src={image.image_url.url}
+                        onClick={() =>
+                          modals.open({
+                            children: <Image h="100%" radius="md" src={image.image_url.url} w="100%" />,
+                            centered: true,
+                            withCloseButton: false,
+                            size: 'xl',
+                          })
+                        }
+                      />
+                    </Box>
+                  ))}
+                </Group>
+              )}
             </>
           )}
           {isEditing ? (
@@ -87,7 +119,7 @@ export default function Message(props: {
               <Button
                 onClick={() => {
                   setIsEditing(false);
-                  onEdit(content);
+                  onEdit(editingContent);
                 }}
               >
                 保存して提出
@@ -96,7 +128,7 @@ export default function Message(props: {
                 variant="outline"
                 onClick={() => {
                   setIsEditing(false);
-                  setContent(renderContent);
+                  setEditingContent(textContent);
                 }}
               >
                 キャンセル
@@ -118,7 +150,7 @@ export default function Message(props: {
                       size={20}
                       variant="transparent"
                       onClick={async () => {
-                        await navigator.clipboard.writeText(renderContent);
+                        await navigator.clipboard.writeText(textContent);
                       }}
                     >
                       <IconClipboard />

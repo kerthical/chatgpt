@@ -28,3 +28,12 @@ globalStyle(
     color: 'white',
   },
 );
+
+export const messageFileContainer = style({
+  borderRadius: '12px',
+  aspectRatio: '1 / 1',
+});
+
+export const messageFileImage = style({
+  cursor: 'pointer',
+});

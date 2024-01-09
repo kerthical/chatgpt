@@ -2,27 +2,105 @@ import * as classes from '@/pages/App/Main/Main.css.ts';
 import { useGenerate } from '@/hooks/useGenerate.tsx';
 import { useGeneratingTask } from '@/hooks/useGeneratingTask.ts';
 import { useMessages } from '@/hooks/useMessages.ts';
+import { useModel } from '@/hooks/useModel.ts';
 import { useNavbar } from '@/hooks/useNavbar.ts';
 import Message from '@/pages/App/Main/Message/Message.tsx';
-import { ActionIcon, AppShell, Box, Center, ScrollArea, Stack, Text, Textarea, Title, Tooltip } from '@mantine/core';
+import { Message as MessageType } from '@/types/Message.ts';
+import {
+  ActionIcon,
+  AppShell,
+  Box,
+  Center,
+  FileButton,
+  Group,
+  Image,
+  ScrollArea,
+  Stack,
+  Text,
+  Textarea,
+  Title,
+  Tooltip,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { randomId } from '@mantine/hooks';
-import { IconArrowUp, IconBrandOpenai, IconPlaystationCircle } from '@tabler/icons-react';
+import { randomId, useFocusWithin } from '@mantine/hooks';
+import { modals } from '@mantine/modals';
+import { IconArrowUp, IconBrandOpenai, IconPlaystationCircle, IconTrash } from '@tabler/icons-react';
 
 export function Main() {
   const { isNavbarOpened, toggleNavbar } = useNavbar();
   const { messages, setMessages } = useMessages();
-  const { generate } = useGenerate();
   const { isGenerating, cancelGeneration } = useGeneratingTask();
+  const { generate } = useGenerate();
+  const { model } = useModel();
+  const { ref: messageInputRef, focused: messageInputFocused } = useFocusWithin();
   const form = useForm({
     initialValues: {
       message: '',
+      files: [] as File[],
     },
     validate: {
       message: value => value.trim().length <= 0,
     },
     validateInputOnChange: true,
   });
+
+  async function generateWithNewMessage(messageOverride?: string) {
+    form.reset();
+    await generate([
+      ...messages,
+      {
+        id: randomId(),
+        role: 'user',
+        content: await formToContent(messageOverride),
+      },
+    ] as MessageType[]);
+  }
+
+  async function formToContent(messageOverride?: string) {
+    function fileToBase64(file: File) {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    async function toImageContent(file: File) {
+      return {
+        type: 'image_url',
+        image_url: {
+          url: await fileToBase64(file),
+          detail: 'high',
+        },
+      };
+    }
+
+    const message = form.values.message.trim();
+    const files = form.values.files.filter(file => file.type.indexOf('image') !== -1);
+
+    if (messageOverride) {
+      return [
+        {
+          type: 'text',
+          text: messageOverride,
+        },
+        ...(await Promise.all(files.map(toImageContent))),
+      ];
+    }
+
+    if (message.length <= 0) {
+      return await Promise.all(files.map(toImageContent));
+    }
+
+    return [
+      {
+        type: 'text',
+        text: message,
+      },
+      ...(await Promise.all(files.map(toImageContent))),
+    ];
+  }
 
   return (
     <AppShell.Main>
@@ -74,6 +152,7 @@ export function Main() {
                     message={m}
                     onEdit={async newContent => {
                       const newState = messages.slice(0, i + 1);
+                      // TODO: fix image edit
                       newState[i].content = newContent;
                       setMessages(newState);
                       await generate(newState);
@@ -99,21 +178,74 @@ export function Main() {
         >
           <form
             className="flex w-full flex-col items-center"
-            onSubmit={form.onSubmit(async ({ message }) => {
-              form.reset();
-              await generate([
-                ...messages,
-                {
-                  id: randomId(),
-                  role: 'user',
-                  content: message,
-                },
-              ]);
-            })}
+            onSubmit={form.onSubmit(async ({ message }) => await generateWithNewMessage(message))}
           >
+            {model?.name === 'GPT-4' && form.values.files.length > 0 && (
+              <Group
+                className={messageInputFocused ? classes.messageFileAreaFocused : classes.messageFileAreaUnfocused}
+                h={128}
+                maw={{
+                  xs: '100%',
+                  sm: '720px',
+                }}
+                p="md"
+                w="100%"
+              >
+                {form.values.files.map((file, i) => (
+                  <Box key={i} bg="dark.8" className={classes.messageFileContainer} h="100%" p="xs" pos="relative">
+                    <Image
+                      className={classes.messageFileImage}
+                      h="100%"
+                      radius="md"
+                      src={URL.createObjectURL(file)}
+                      onClick={() =>
+                        modals.open({
+                          children: <Image h="100%" radius="md" src={URL.createObjectURL(file)} />,
+                          centered: true,
+                          withCloseButton: false,
+                          size: 'xl',
+                        })
+                      }
+                    />
+                    <ActionIcon
+                      className={classes.messageFileActionIcon}
+                      radius="sm"
+                      size={28}
+                      onClick={() => {
+                        form.setFieldValue(
+                          'files',
+                          form.values.files.filter((_, j) => i !== j),
+                        );
+                      }}
+                    >
+                      <IconTrash />
+                    </ActionIcon>
+                  </Box>
+                ))}
+              </Group>
+            )}
             <Textarea
+              ref={messageInputRef}
+              autoFocus
               autosize
-              disabled={isGenerating}
+              className={model?.name === 'GPT-4' && form.values.files.length > 0 ? classes.messageInputWithFile : ''}
+              leftSection={
+                model?.name === 'GPT-4' && (
+                  <FileButton
+                    multiple
+                    accept="image/png,image/jpeg"
+                    onChange={e => {
+                      form.setFieldValue('files', [...form.values.files, ...e]);
+                    }}
+                  >
+                    {props => (
+                      <ActionIcon c="white" radius="md" size={30} variant="transparent" {...props}>
+                        <IconArrowUp />
+                      </ActionIcon>
+                    )}
+                  </FileButton>
+                )
+              }
               maw={{
                 xs: '100%',
                 sm: '720px',
@@ -149,20 +281,21 @@ export function Main() {
               }}
               w="100%"
               onKeyDown={async e => {
-                if (e.keyCode === 13 && !e.shiftKey) {
-                  form.reset();
+                if (e.keyCode === 13 && !e.shiftKey && !isGenerating) {
                   e.preventDefault();
-                  await generate([
-                    ...messages,
-                    {
-                      id: randomId(),
-                      role: 'user',
-                      content: form.values.message,
-                    },
-                  ]);
+                  await generateWithNewMessage();
                 } else if (e.keyCode === 13 && e.shiftKey) {
                   e.preventDefault();
                   form.setFieldValue('message', form.values.message + '\n');
+                }
+              }}
+              onPaste={e => {
+                const items = e.clipboardData.items;
+                if (items.length > 0 && items[0].type.indexOf('image') !== -1) {
+                  const file = items[0].getAsFile();
+                  if (file) {
+                    form.setFieldValue('files', [...form.values.files, file]);
+                  }
                 }
               }}
               {...form.getInputProps('message', {

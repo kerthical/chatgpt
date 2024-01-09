@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { globalStyle, style } from '@vanilla-extract/css';
 
 export const sidebarChevronContainer = style({
   position: 'absolute',
@@ -101,6 +101,62 @@ export const sendButtonIcon = style({
   selectors: {
     [`${sendButton}:disabled &`]: {
       opacity: 0.3,
+    },
+  },
+});
+
+export const messageInputWithFile = style({});
+
+globalStyle(`${messageInputWithFile} textarea`, {
+  borderTop: 'none',
+  borderTopLeftRadius: '0',
+  borderTopRightRadius: '0',
+});
+
+const messageFileArea = style({
+  borderTopLeftRadius: '16px',
+  borderTopRightRadius: '16px',
+  borderTop: '1px solid',
+  borderLeft: '1px solid',
+  borderRight: '1px solid',
+});
+
+export const messageFileAreaUnfocused = style([
+  messageFileArea,
+  {
+    borderColor: '#656777',
+  },
+]);
+
+export const messageFileAreaFocused = style([
+  messageFileArea,
+  {
+    borderColor: '#286fb3',
+  },
+]);
+
+export const messageFileContainer = style({
+  borderRadius: '12px',
+  aspectRatio: '1 / 1',
+});
+
+export const messageFileImage = style({
+  cursor: 'pointer',
+});
+
+export const messageFileActionIcon = style({
+  position: 'absolute',
+  top: '-4px',
+  right: '-4px',
+  background: '#F03E3E',
+  opacity: 0,
+  ':hover': {
+    opacity: 1,
+    background: '#E03131',
+  },
+  selectors: {
+    [`${messageFileContainer}:hover &`]: {
+      opacity: 1,
     },
   },
 });
