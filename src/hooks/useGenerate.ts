@@ -16,8 +16,15 @@ export function useGenerate() {
   const { messageHandlers } = useMessages();
   const { model } = useModel();
 
+  function cancelGeneration() {
+    generationTask?.controller.abort();
+    setGenerating(false);
+    setGenerationTask(null);
+  }
+
   async function generate(messages: Message[]) {
     try {
+      cancelGeneration();
       setGenerating(true);
       const openai = new OpenAI({
         apiKey: localStorage.getItem('apiKey')!,
@@ -115,11 +122,7 @@ export function useGenerate() {
 
   return {
     generate,
+    cancelGeneration,
     isGenerating: isGenerating,
-    cancelGeneration: () => {
-      generationTask?.controller.abort();
-      setGenerating(false);
-      setGenerationTask(null);
-    },
   };
 }
