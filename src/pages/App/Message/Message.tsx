@@ -1,13 +1,22 @@
 import 'highlight.js/styles/github-dark.css';
 import * as classes from '@/pages/App/Message/Message.css.ts';
-import { ActionIcon, Avatar, Center, Group, Stack, Text } from '@mantine/core';
+import { ActionIcon, Avatar, Button, Center, Group, Image, Stack, Text, Textarea } from '@mantine/core';
 import { IconBrandOpenai, IconClipboard, IconEdit, IconReload } from '@tabler/icons-react';
 import hljs from 'highlight.js';
 import { Marked } from 'marked';
 import { markedHighlight } from 'marked-highlight';
+import { OpenAI } from 'openai';
+import { useState } from 'react';
 
-export default function Message(props: { isLast: boolean; message: { role: string; content: string } }) {
-  const { message, isLast } = props;
+import ChatCompletionMessageParam = OpenAI.ChatCompletionMessageParam;
+
+export default function Message(props: {
+  isLast: boolean;
+  message: ChatCompletionMessageParam & { id: string };
+  onEdit: (newContent: string) => void;
+  onReload: () => void;
+}) {
+  const { message, isLast, onEdit, onReload } = props;
   const marked = new Marked(
     markedHighlight({
       highlight(code, lang, _info) {
@@ -20,6 +29,17 @@ export default function Message(props: { isLast: boolean; message: { role: strin
       },
     }),
   );
+
+  const image = Array.isArray(message.content) ? message.content.find(c => c.type === 'image_url') : undefined;
+  const image_url = image?.type === 'image_url' ? image.image_url.url : undefined;
+  const renderContent = Array.isArray(message.content)
+    ? message.content[0]!.type === 'text'
+      ? message.content[0]!.text
+      : ''
+    : message.content ?? '';
+
+  const [content, setContent] = useState(renderContent);
+  const [isEditing, setIsEditing] = useState(false);
 
   return (
     <Group align="start" className={classes.messageContainer} gap="xs" px="md" py="xs" w="100%" wrap="nowrap">
@@ -35,36 +55,84 @@ export default function Message(props: { isLast: boolean; message: { role: strin
           {message.role === 'user' ? 'あなた' : 'ChatGPT'}
         </Text>
         <Stack className="lg:w-[calc(100%-115px)]" gap="xs">
-          <Text
-            c="gray"
-            className={`prose break-words ${classes.messageContent}`}
-            dangerouslySetInnerHTML={{
-              __html: marked.parse(message.content, {
-                gfm: true,
-                breaks: true,
-              }),
-            }}
-          />
-          <Group className={classes.messageActions} gap={4}>
-            {message.role === 'user' ? (
-              <>
-                <ActionIcon c="gray" size={20} variant="transparent">
-                  <IconEdit />
-                </ActionIcon>
-              </>
-            ) : (
-              <>
-                <ActionIcon c="gray" size={20} variant="transparent">
-                  <IconClipboard />
-                </ActionIcon>
-                {isLast && (
-                  <ActionIcon c="gray" size={20} variant="transparent">
-                    <IconReload />
+          {isEditing ? (
+            <Textarea
+              autosize
+              leftSection={image_url && <Avatar src={image_url} />}
+              value={content}
+              onChange={e => setContent(e.currentTarget.value)}
+              onKeyDown={e => {
+                if (e.keyCode === 13 && e.ctrlKey) {
+                  e.preventDefault();
+                  setIsEditing(false);
+                  onEdit(content);
+                }
+              }}
+            />
+          ) : (
+            <>
+              <Text
+                c="gray"
+                className={`prose prose-invert break-words ${classes.messageContent}`}
+                dangerouslySetInnerHTML={{
+                  __html: marked.parse(renderContent, {
+                    gfm: true,
+                    breaks: true,
+                  }),
+                }}
+              />
+              {image_url && <Image radius="md" src={image_url} />}
+            </>
+          )}
+          {isEditing ? (
+            <Group justify="center">
+              <Button
+                onClick={() => {
+                  setIsEditing(false);
+                  onEdit(content);
+                }}
+              >
+                保存して提出
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsEditing(false);
+                  setContent(renderContent);
+                }}
+              >
+                キャンセル
+              </Button>
+            </Group>
+          ) : (
+            <Group className={classes.messageActions} gap={4}>
+              {message.role === 'user' ? (
+                <>
+                  <ActionIcon c="gray" size={20} variant="transparent" onClick={() => setIsEditing(true)}>
+                    <IconEdit />
                   </ActionIcon>
-                )}
-              </>
-            )}
-          </Group>
+                </>
+              ) : (
+                <>
+                  <ActionIcon
+                    c="gray"
+                    size={20}
+                    variant="transparent"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(renderContent);
+                    }}
+                  >
+                    <IconClipboard />
+                  </ActionIcon>
+                  {isLast && (
+                    <ActionIcon c="gray" size={20} variant="transparent" onClick={onReload}>
+                      <IconReload />
+                    </ActionIcon>
+                  )}
+                </>
+              )}
+            </Group>
+          )}
         </Stack>
       </Stack>
     </Group>

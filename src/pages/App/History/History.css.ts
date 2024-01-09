@@ -17,10 +17,24 @@ export const historyMenuItem = style({
   },
 });
 
-export const history = style({
+const history = style({
+  display: 'flex',
+  alignItems: 'center',
   position: 'relative',
   borderRadius: '8px',
+  cursor: 'pointer',
 });
+
+export const historySelected = style([history, { background: '#343541' }]);
+export const historyUnselected = style([
+  history,
+  {
+    background: 'transparent',
+    ':hover': {
+      background: 'rgba(255, 255, 255, 0.1)',
+    },
+  },
+]);
 
 export const historyActionsSelected = style({
   opacity: 1,
@@ -55,5 +69,10 @@ export const historyOverlayUnselected = style([
   {
     width: '32px',
     background: 'linear-gradient(to left, black 40%, transparent)',
+    selectors: {
+      [`${history}:hover &`]: {
+        width: '80px',
+      },
+    },
   },
 ]);
