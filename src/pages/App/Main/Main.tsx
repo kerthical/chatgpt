@@ -1,6 +1,6 @@
 import * as classes from '@/pages/App/Main/Main.css.ts';
 import { useGenerate } from '@/hooks/useGenerate.tsx';
-import { useHistories } from '@/hooks/useHistories.ts';
+import { useGeneratingTask } from '@/hooks/useGeneratingTask.ts';
 import { useMessages } from '@/hooks/useMessages.ts';
 import { useNavbar } from '@/hooks/useNavbar.ts';
 import Message from '@/pages/App/Main/Message/Message.tsx';
@@ -12,8 +12,8 @@ import { IconArrowUp, IconBrandOpenai, IconPlaystationCircle } from '@tabler/ico
 export function Main() {
   const { isNavbarOpened, toggleNavbar } = useNavbar();
   const { messages, setMessages } = useMessages();
-  const { selectedHistory, selectHistory, setHistories } = useHistories();
-  const { generate, isGenerating, cancelGeneration } = useGenerate(selectedHistory, selectHistory, setHistories);
+  const { generate } = useGenerate();
+  const { isGenerating, cancelGeneration } = useGeneratingTask();
   const form = useForm({
     initialValues: {
       message: '',
@@ -155,7 +155,7 @@ export function Main() {
                   await generate([
                     ...messages,
                     {
-                      id: Math.random().toString(36).substring(2, 9),
+                      id: randomId(),
                       role: 'user',
                       content: form.values.message,
                     },

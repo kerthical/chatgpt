@@ -1,4 +1,4 @@
-import { useGenerate } from '@/hooks/useGenerate.tsx';
+import { useGeneratingTask } from '@/hooks/useGeneratingTask.ts';
 import { useMessages } from '@/hooks/useMessages.ts';
 import { useModel } from '@/hooks/useModel.ts';
 import { History } from '@/types/History.ts';
@@ -14,7 +14,7 @@ export function useHistories() {
   const { selectModel } = useModel();
   const { setMessages } = useMessages();
   const selectedHistory = histories.find(h => h.id === selectedHistoryId);
-  const { cancelGeneration } = useGenerate(selectedHistory, setSelectedHistoryId, setHistories);
+  const { cancelGeneration } = useGeneratingTask();
 
   useEffect(() => {
     setHistories(JSON.parse(localStorage.getItem('history') || '[]'));

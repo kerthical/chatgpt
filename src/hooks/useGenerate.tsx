@@ -1,33 +1,18 @@
+import { useGeneratingTask } from '@/hooks/useGeneratingTask.ts';
+import { useHistories } from '@/hooks/useHistories.ts';
 import { useMessages } from '@/hooks/useMessages.ts';
 import { useModel } from '@/hooks/useModel.ts';
-import { History } from '@/types/History.ts';
 import { Message, toOpenAIMessage } from '@/types/Message.ts';
+import { randomId } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { IconCircleX } from '@tabler/icons-react';
-import { atom, useAtom } from 'jotai';
 import { OpenAI } from 'openai';
-import { Stream } from 'openai/streaming';
 
-import ChatCompletionChunk = OpenAI.Chat.ChatCompletionChunk;
-
-const isGeneratingAtom = atom(false);
-const generationTaskAtom = atom<Stream<ChatCompletionChunk> | null>(null);
-
-export function useGenerate(
-  selectedHistory: History | null | undefined,
-  selectHistory: (id: string) => void,
-  setHistories: (histories: History[]) => void,
-) {
-  const [isGenerating, setGenerating] = useAtom(isGeneratingAtom);
-  const [generationTask, setGenerationTask] = useAtom(generationTaskAtom);
+export function useGenerate() {
+  const { selectedHistory, setHistories, selectHistory } = useHistories();
+  const { setGenerationTask, setGenerating, cancelGeneration } = useGeneratingTask();
   const { setMessages } = useMessages();
   const { model } = useModel();
-
-  function cancelGeneration() {
-    generationTask?.controller.abort();
-    setGenerating(false);
-    setGenerationTask(null);
-  }
 
   async function generate(messages: Message[]) {
     try {
@@ -109,7 +94,7 @@ export function useGenerate(
             },
           ],
         });
-        const id = Math.random().toString(36).substring(2, 9);
+        const id = randomId();
         savedHistory.push({
           id,
           name: summarizeCompletion.choices[0].message.content,
@@ -136,7 +121,5 @@ export function useGenerate(
 
   return {
     generate,
-    cancelGeneration,
-    isGenerating: isGenerating,
   };
 }
