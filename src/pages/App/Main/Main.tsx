@@ -304,6 +304,11 @@ export function Main() {
                   if (file) {
                     form.setFieldValue('files', [...form.values.files, file]);
                   }
+                } else {
+                  const file = e.clipboardData.files[0];
+                  if (file && file.type.indexOf('image') !== -1) {
+                    form.setFieldValue('files', [...form.values.files, file]);
+                  }
                 }
               }}
               {...form.getInputProps('message', {
