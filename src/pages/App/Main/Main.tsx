@@ -152,8 +152,16 @@ export function Main() {
                     message={m}
                     onEdit={async newContent => {
                       const newState = messages.slice(0, i + 1);
-                      // TODO: fix image edit
-                      newState[i].content = newContent;
+                      if (Array.isArray(newState[i].content)) {
+                        (
+                          (newState[i].content as { type: string }[]).find(c => c.type === 'text') as {
+                            type: string;
+                            text: string;
+                          }
+                        ).text = newContent;
+                      } else {
+                        newState[i].content = newContent;
+                      }
                       setMessages(newState);
                       await generate(newState);
                     }}
