@@ -16,8 +16,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   return (
-    <Group gap={0} h="100dvh" mah="100dvh" maw="100dvw" w="100dvw">
-      <Stack bg="#00002e" h="100%" px="xl" py="lg" w="60%">
+    <Group gap={0} h="100dvh" mah="100dvh" maw="100dvw" w="100dvw" wrap="nowrap">
+      <Stack bg="#00002e" h="100%" px="xl" py="lg" visibleFrom="sm" w="60%">
         <Title c="#d292ff" fw={700} order={3}>
           ChatGPT●
         </Title>

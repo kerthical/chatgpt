@@ -91,7 +91,7 @@ export default function Message(props: {
                 }}
               />
               {images.length > 0 && (
-                <Group h={256} w="100%">
+                <Group h={256} w="100%" wrap="nowrap">
                   {images.map((image, i) => (
                     <Box key={i} bg="dark.8" className={classes.messageFileContainer} h="100%">
                       <Image

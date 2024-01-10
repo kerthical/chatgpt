@@ -179,7 +179,7 @@ export function Main() {
         <Stack
           align="center"
           px={{
-            xs: 'sm',
+            base: 'sm',
             sm: 'xl',
           }}
           w="100%"
@@ -198,6 +198,7 @@ export function Main() {
                 }}
                 p="md"
                 w="100%"
+                wrap="nowrap"
               >
                 {form.values.files.map((file, i) => (
                   <Box key={i} bg="dark.8" className={classes.messageFileContainer} h="100%" p="xs" pos="relative">
@@ -255,7 +256,6 @@ export function Main() {
                 )
               }
               maw={{
-                xs: '100%',
                 sm: '720px',
               }}
               placeholder="ChatGPTにメッセージを送る..."
