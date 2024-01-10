@@ -139,11 +139,11 @@ export function Main() {
           <ScrollArea h="100%" scrollbarSize={6} w="100%">
             <Stack align="center" gap={0} px="xl" w="100%">
               <Box
+                w="100%"
                 maw={{
                   xs: '100%',
                   sm: '720px',
                 }}
-                w="100%"
               >
                 {messages.map((m, i) => (
                   <Message
@@ -178,11 +178,11 @@ export function Main() {
         )}
         <Stack
           align="center"
+          w="100%"
           px={{
             base: 'sm',
             sm: 'xl',
           }}
-          w="100%"
         >
           <form
             className="flex w-full flex-col items-center"
@@ -192,13 +192,13 @@ export function Main() {
               <Group
                 className={messageInputFocused ? classes.messageFileAreaFocused : classes.messageFileAreaUnfocused}
                 h={128}
+                p="md"
+                w="100%"
+                wrap="nowrap"
                 maw={{
                   xs: '100%',
                   sm: '720px',
                 }}
-                p="md"
-                w="100%"
-                wrap="nowrap"
               >
                 {form.values.files.map((file, i) => (
                   <Box key={i} bg="dark.8" className={classes.messageFileContainer} h="100%" p="xs" pos="relative">
@@ -238,6 +238,10 @@ export function Main() {
               autoFocus
               autosize
               className={model?.name === 'GPT-4' && form.values.files.length > 0 ? classes.messageInputWithFile : ''}
+              placeholder="ChatGPTにメッセージを送る..."
+              radius="lg"
+              size="lg"
+              w="100%"
               leftSection={
                 model?.name === 'GPT-4' && (
                   <FileButton
@@ -258,8 +262,6 @@ export function Main() {
               maw={{
                 sm: '720px',
               }}
-              placeholder="ChatGPTにメッセージを送る..."
-              radius="lg"
               rightSection={
                 isGenerating ? (
                   <ActionIcon c="white" radius="md" size={30} variant="transparent" onClick={cancelGeneration}>
@@ -281,13 +283,11 @@ export function Main() {
                   </Tooltip>
                 )
               }
-              size="lg"
               styles={{
                 input: {
                   background: 'transparent',
                 },
               }}
-              w="100%"
               onKeyDown={async e => {
                 if (e.keyCode === 13 && !e.shiftKey && !isGenerating) {
                   e.preventDefault();

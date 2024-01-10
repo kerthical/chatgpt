@@ -30,9 +30,9 @@
         "callbacksLast": true,
         "shorthandFirst": true,
         "shorthandLast": false,
-        "ignoreCase": true,
-        "noSortAlphabetically": false,
-        "reservedFirst": true
+        "reservedFirst": true,
+        "multiline": "last",
+        "noSortAlphabetically": true
       }
     ],
     "react-hooks/exhaustive-deps": "off",

@@ -9,10 +9,12 @@ export default function App() {
 
   return (
     <AppShell
+      layout="alt"
+      transitionDuration={200}
+      withBorder={false}
       header={{
         height: 60,
       }}
-      layout="alt"
       navbar={{
         width: {
           base: 320,
@@ -24,8 +26,6 @@ export default function App() {
           mobile: !isNavbarOpened,
         },
       }}
-      transitionDuration={200}
-      withBorder={false}
     >
       <Header />
       <Navbar />

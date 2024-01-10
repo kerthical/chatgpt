@@ -76,10 +76,10 @@ export function Navbar() {
               <Menu
                 opened={accountMenuOpened}
                 position="top"
+                width={236}
                 transitionProps={{
                   transition: 'pop',
                 }}
-                width={236}
                 onChange={setAccountMenuOpened}
               >
                 <Menu.Target>
