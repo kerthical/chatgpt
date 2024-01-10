@@ -41,15 +41,14 @@ export function Navbar() {
             ref={navbarRef}
             bg="black"
             h="100%"
-            maw="90%"
             px="sm"
             py="md"
             w={{
-              base: 320,
-              sm: 260,
+              base: 260,
+              sm: 320,
             }}
           >
-            <Stack align="center" h="f00%">
+            <Stack align="center" h="100%">
               <Stack className="flex-1" w="100%">
                 <Button
                   c="white"
