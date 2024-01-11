@@ -37,16 +37,18 @@ export function fromJSONtoMessage(message: unknown): Message | null {
   }
 }
 
+export type Attachment = {
+  name: string;
+  url: string;
+};
+
 export class UserMessage implements Message {
   role: 'user';
 
   constructor(
     public id: string,
     public content: string,
-    public files: {
-      name: string;
-      url: string;
-    }[] = [],
+    public files: Attachment[],
   ) {
     this.role = 'user';
   }
@@ -73,17 +75,19 @@ export class UserMessage implements Message {
   }
 }
 
+export type ToolCall = {
+  id: string;
+  name: string;
+  arguments: string;
+};
+
 export class AssistantMessage implements Message {
   id: string;
   role: 'assistant';
   content: string;
-  tool_calls: {
-    id: string;
-    name: string;
-    arguments: string;
-  }[];
+  tool_calls: ToolCall[];
 
-  constructor(id: string, content: string, tool_calls: { id: string; name: string; arguments: string }[]) {
+  constructor(id: string, content: string, tool_calls: ToolCall[]) {
     this.id = id;
     this.role = 'assistant';
     this.content = content;

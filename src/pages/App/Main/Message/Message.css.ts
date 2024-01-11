@@ -29,12 +29,6 @@ globalStyle(
   },
 );
 
-export const messageFileContainer = style({
-  borderRadius: '12px',
-  aspectRatio: '1 / 1',
-  cursor: 'pointer',
-});
-
 export const collapseArea = style({
   cursor: 'pointer',
 });

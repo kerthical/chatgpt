@@ -1,8 +1,9 @@
+import * as pdfjsLib from 'pdfjs-dist';
 import hljs from 'highlight.js';
 import { Marked } from 'marked';
 import { markedHighlight } from 'marked-highlight';
-import * as pdfjsLib from 'pdfjs-dist';
 import PdfJsWorker from 'pdfjs-dist/build/pdf.worker.mjs?worker';
+import { TextItem } from 'pdfjs-dist/types/src/display/api';
 
 export async function getUrl(file: File) {
   return await new Promise<string>((resolve, reject) => {
@@ -43,15 +44,11 @@ export async function getPDFContent(url: string) {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const textContent = await page.getTextContent();
-    fileContent += textContent.items
-      .map(item => {
-        if ('str' in item) {
-          return item.str;
-        }
-        return '';
-      })
-      .filter(str => str !== '')
-      .join('\n');
+    const items = textContent.items.filter(
+      item => 'str' in item && 'dir' in item && 'width' in item && 'height' in item && item.str !== '',
+    ) as TextItem[];
+
+    fileContent += items.map(item => item.str).join('\n');
   }
 
   return fileContent;

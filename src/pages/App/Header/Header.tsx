@@ -19,19 +19,19 @@ export function Header() {
   return (
     <AppShell.Header>
       <Group align="center" h="100%" justify="space-between" p={8} w="100%">
-        <ActionIcon c="white" hiddenFrom="sm" size="sm" variant="transparent" onClick={toggleNavbar}>
+        <ActionIcon c="white" hiddenFrom="sm" onClick={toggleNavbar} size="sm" variant="transparent">
           <IconMenu />
         </ActionIcon>
         <Group align="center" gap="xs">
           {!isNavbarOpened && (
-            <ActionIcon c="white" p={6} size="lg" variant="default" visibleFrom="sm" onClick={newHistory}>
+            <ActionIcon c="white" onClick={newHistory} p={6} size="lg" variant="default" visibleFrom="sm">
               <IconEdit />
             </ActionIcon>
           )}
           <Menu
+            onChange={setModelSelectorOpened}
             opened={modelSelectorOpened}
             position={isMobile ? 'bottom' : 'bottom-start'}
-            onChange={setModelSelectorOpened}
           >
             <Menu.Target>
               <Group
@@ -56,7 +56,7 @@ export function Header() {
             </Menu.Dropdown>
           </Menu>
         </Group>
-        <ActionIcon c="white" hiddenFrom="sm" size="sm" variant="transparent" onClick={newHistory}>
+        <ActionIcon c="white" hiddenFrom="sm" onClick={newHistory} size="sm" variant="transparent">
           <IconEdit />
         </ActionIcon>
       </Group>

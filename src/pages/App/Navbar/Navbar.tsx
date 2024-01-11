@@ -40,8 +40,8 @@ export function Navbar() {
 
   return (
     <>
-      <Modal centered opened={isSettingModalOpened} title="設定" onClose={closeSettingModal}>
-        <Group align="center" mt="lg" justify="space-between" w="100%">
+      <Modal centered onClose={closeSettingModal} opened={isSettingModalOpened} title="設定">
+        <Group align="center" justify="space-between" mt="lg" w="100%">
           会話履歴をすべて削除
           <Button
             bg="red.8"
@@ -61,21 +61,21 @@ export function Navbar() {
       </Modal>
       <Modal
         centered
-        withCloseButton={false}
-        opened={isInstructionsModalOpened}
-        title="カスタム指示"
-        size="lg"
         onClose={closeInstructionsModal}
+        opened={isInstructionsModalOpened}
+        size="lg"
+        title="カスタム指示"
+        withCloseButton={false}
       >
         <Stack gap="sm" mt="lg">
           <Stack gap={2}>
             <Tooltip
-              c="white"
               bg="#202123"
+              c="white"
               position="right-start"
               label={
                 <Stack gap={0} p="xs">
-                  <Text size="sm" fw={700}>
+                  <Text fw={700} size="sm">
                     アイデアの誘発
                   </Text>
                   <List>
@@ -91,9 +91,10 @@ export function Navbar() {
               <Textarea
                 autosize
                 label="ChatGPTにあなたについて何を知らせれば、より良い応答を提供できると思いますか？"
-                minRows={8}
-                maxRows={16}
                 maxLength={1500}
+                maxRows={16}
+                minRows={8}
+                onChange={e => setEditingMyself(e.currentTarget.value)}
                 value={editingMyself ?? ''}
                 styles={{
                   label: {
@@ -101,19 +102,18 @@ export function Navbar() {
                     marginBottom: 8,
                   },
                 }}
-                onChange={e => setEditingMyself(e.currentTarget.value)}
               />
             </Tooltip>
             <Text size="xs">{editingMyself?.length ?? 0}/1500</Text>
           </Stack>
           <Stack gap={2}>
             <Tooltip
-              c="white"
               bg="#202123"
+              c="white"
               position="right-start"
               label={
                 <Stack gap={0} p="xs">
-                  <Text size="sm" fw={700}>
+                  <Text fw={700} size="sm">
                     アイデアの誘発
                   </Text>
                   <List>
@@ -130,9 +130,10 @@ export function Navbar() {
               <Textarea
                 autosize
                 label="ChatGPTにどのように応答してほしいですか？"
-                minRows={8}
-                maxRows={16}
                 maxLength={1500}
+                maxRows={16}
+                minRows={8}
+                onChange={e => setEditingInstruction(e.currentTarget.value)}
                 value={editingInstruction ?? ''}
                 styles={{
                   label: {
@@ -140,7 +141,6 @@ export function Navbar() {
                     marginBottom: 8,
                   },
                 }}
-                onChange={e => setEditingInstruction(e.currentTarget.value)}
               />
             </Tooltip>
             <Text size="xs">{editingInstruction?.length ?? 0}/1500</Text>
@@ -194,11 +194,11 @@ export function Navbar() {
                   className={classes.newChatButton}
                   h={40}
                   justify="space-between"
+                  onClick={newHistory}
                   px="xs"
                   rightSection={<IconEdit size={18} />}
                   variant="subtle"
                   w="100%"
-                  onClick={newHistory}
                 >
                   <Group gap="xs">
                     <Center bg="white" className="rounded-full" h={28} w={28}>
@@ -212,13 +212,13 @@ export function Navbar() {
                 </Stack>
               </Stack>
               <Menu
+                onChange={setAccountMenuOpened}
                 opened={isAccountMenuOpened}
                 position="top"
                 width={236}
                 transitionProps={{
                   transition: 'pop',
                 }}
-                onChange={setAccountMenuOpened}
               >
                 <Menu.Target>
                   <Button
@@ -274,7 +274,7 @@ export function Navbar() {
             </Stack>
           </Box>
           <Box hiddenFrom="sm" p="sm">
-            <ActionIcon c="white" size="sm" variant="transparent" onClick={toggleNavbar}>
+            <ActionIcon c="white" onClick={toggleNavbar} size="sm" variant="transparent">
               <IconX />
             </ActionIcon>
           </Box>

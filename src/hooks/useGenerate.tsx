@@ -4,11 +4,12 @@ import { useMessages } from '@/hooks/useMessages.ts';
 import { useModel } from '@/hooks/useModel.ts';
 import { History } from '@/types/History.ts';
 import { AssistantMessage, Message, ToolMessage, UserMessage } from '@/types/Message.ts';
-import { getPDFContent } from '@/utils/file.ts';
+import { getPDFContent } from '@/utils/utils.ts';
 import { randomId } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { IconCircleX } from '@tabler/icons-react';
-import { OpenAI } from 'openai';
+import { APIError, OpenAI } from 'openai';
+import { BadRequestError } from 'openai/error';
 
 export function useGenerate() {
   const { setGenerationTask, setGenerating, cancelGeneration, customMyself, customInstruction } = useGeneratingTask();
@@ -245,13 +246,28 @@ Format:
         );
       }
     } catch (e) {
+      let errorMessage: string;
+      if (e instanceof BadRequestError && e.message.includes("400 This model's maximum context")) {
+        if (model?.name === 'GPT-3.5') {
+          errorMessage =
+            'メッセージの長さが長すぎる可能性があります。モデルをGPT-4に変更するか、メッセージを短くしてください。';
+        } else {
+          errorMessage = 'メッセージの長さが長すぎる可能性があります。メッセージを短くしてください。';
+        }
+      } else if (e instanceof APIError) {
+        errorMessage = 'APIの呼び出しに失敗しました。エラーの詳細はコンソールに記録されました。';
+        console.error(e);
+      } else {
+        errorMessage = '不明なエラーが発生しました。エラーの詳細はコンソールに記録されました。';
+        console.error(e);
+      }
+
       notifications.show({
         color: 'red',
         title: 'エラー',
-        message: 'メッセージの生成中にエラーが発生しました。エラーの詳細はコンソールに記録されました。',
+        message: errorMessage,
         icon: <IconCircleX size={24} />,
       });
-      console.error(e);
     } finally {
       setGenerating(false);
       setGenerationTask(null);

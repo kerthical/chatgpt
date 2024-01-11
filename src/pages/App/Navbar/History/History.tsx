@@ -31,8 +31,8 @@ export default function History(props: { history: HistoryType }) {
       className={isSelected && !isEditing ? classes.historySelected : classes.historyUnselected}
       component="a"
       h={36}
-      p={isEditing ? 0 : 6}
       onClick={() => selectHistory(history.id)}
+      p={isEditing ? 0 : 6}
     >
       {isEditing ? (
         <TextInput
@@ -78,7 +78,7 @@ export default function History(props: { history: HistoryType }) {
           >
             <Menu position="bottom-start" width={220}>
               <Menu.Target>
-                <ActionIcon c="gray" size={20} variant="transparent" onClick={e => e.stopPropagation()}>
+                <ActionIcon c="gray" onClick={e => e.stopPropagation()} size={20} variant="transparent">
                   <IconDots />
                 </ActionIcon>
               </Menu.Target>

@@ -3,6 +3,7 @@ import * as classes from '@/pages/App/Main/Message/Message.css.ts';
 import { useGeneratingTask } from '@/hooks/useGeneratingTask.ts';
 import { useHistories } from '@/hooks/useHistories.ts';
 import { useModel } from '@/hooks/useModel.ts';
+import Attachment from '@/pages/App/Main/Attachment/Attachment.tsx';
 import {
   AssistantMessage as AssistantMessageType,
   Message as MessageType,
@@ -10,23 +11,8 @@ import {
   UserMessage as UserMessageType,
 } from '@/types/Message.ts';
 import { models } from '@/utils/constants.tsx';
-import { marked } from '@/utils/file.ts';
-import {
-  ActionIcon,
-  Avatar,
-  Box,
-  Button,
-  Center,
-  Collapse,
-  Group,
-  Image,
-  ScrollArea,
-  Stack,
-  Text,
-  Textarea,
-  Tooltip,
-} from '@mantine/core';
-import { modals } from '@mantine/modals';
+import { marked } from '@/utils/utils.ts';
+import { ActionIcon, Avatar, Button, Center, Collapse, Group, Stack, Text, Textarea, Tooltip } from '@mantine/core';
 import {
   IconBrandOpenai,
   IconClipboard,
@@ -53,8 +39,8 @@ function UserMessage(props: { message: UserMessageType; onEdit: (newContent: str
           {isEditing ? (
             <Textarea
               autosize
-              value={editingContent}
               onChange={e => setEditingContent(e.currentTarget.value)}
+              value={editingContent}
               onKeyDown={e => {
                 if (e.keyCode === 13 && e.ctrlKey) {
                   e.preventDefault();
@@ -76,97 +62,10 @@ function UserMessage(props: { message: UserMessageType; onEdit: (newContent: str
             />
           )}
           {message.files.length > 0 && (
-            <Group w="100%" wrap="nowrap">
-              {message.files.map((file, i) =>
-                file.url.startsWith('data:image/') ? (
-                  <Box key={i} bg="dark.8" className={classes.messageFileContainer} w={256} h={256}>
-                    <Image
-                      h="100%"
-                      radius="md"
-                      src={file.url}
-                      onClick={() =>
-                        modals.open({
-                          children: <Image h="100%" radius="md" src={file.url} w="100%" />,
-                          centered: true,
-                          withCloseButton: false,
-                          size: 'xl',
-                        })
-                      }
-                    />
-                  </Box>
-                ) : file.url.startsWith('data:application/pdf') ? (
-                  <Box
-                    key={i}
-                    bg="dark.8"
-                    className={classes.messageFileContainer}
-                    h={64}
-                    w={128}
-                    onClick={() =>
-                      modals.open({
-                        children: <Text>TODO</Text>,
-                        title: file.name,
-                        centered: true,
-                        withCloseButton: false,
-                        size: 'lg',
-                        scrollAreaComponent: ScrollArea.Autosize,
-                      })
-                    }
-                  >
-                    <Center h="100%">
-                      <Text c="white" size="xs">
-                        {file.name}
-                      </Text>
-                    </Center>
-                  </Box>
-                ) : (
-                  <Box
-                    key={i}
-                    bg="dark.8"
-                    className={classes.messageFileContainer}
-                    h={64}
-                    w={128}
-                    onClick={() =>
-                      modals.open({
-                        children: (
-                          <Box
-                            h="100%"
-                            w="100%"
-                            mt="lg"
-                            className="prose prose-invert max-w-none"
-                            dangerouslySetInnerHTML={{
-                              __html: marked.parse(
-                                '```' +
-                                  file.name.split('.').pop() +
-                                  '\n' +
-                                  atob(file.url.split(',')[1])
-                                    .split('\n')
-                                    .map(line => line.replace(/\r/g, ''))
-                                    .join('\n') +
-                                  '\n```',
-                                {
-                                  gfm: true,
-                                  breaks: true,
-                                },
-                              ),
-                            }}
-                          />
-                        ),
-                        title: file.name,
-                        centered: true,
-                        withCloseButton: false,
-                        size: 'lg',
-                        scrollAreaComponent: ScrollArea.Autosize,
-                      })
-                    }
-                  >
-                    <Center h="100%">
-                      <Text c="white" size="xs">
-                        {file.name}
-                      </Text>
-                    </Center>
-                  </Box>
-                ),
-              )}
+            <Group h="100%" w="100%" wrap="nowrap">
+              {message.files.map((attachment, i) => (
+                <Attachment key={i} attachment={attachment} type="message" />
+              ))}
             </Group>
           )}
           {isEditing ? (
@@ -191,7 +90,7 @@ function UserMessage(props: { message: UserMessageType; onEdit: (newContent: str
             </Group>
           ) : (
             <Group className={classes.messageActions} gap={4}>
-              <ActionIcon c="gray" size={20} variant="transparent" onClick={() => setIsEditing(true)}>
+              <ActionIcon c="gray" onClick={() => setIsEditing(true)} size={20} variant="transparent">
                 <IconEdit />
               </ActionIcon>
             </Group>
@@ -252,7 +151,7 @@ function AssistantMessage(props: { message: AssistantMessageType; isLast: boolea
             </Tooltip>
             {isLast && (
               <Tooltip withArrow bg="black" c="white" fw={700} label="Regenerate" position="bottom">
-                <ActionIcon c="gray" size={20} variant="transparent" onClick={onReload}>
+                <ActionIcon c="gray" onClick={onReload} size={20} variant="transparent">
                   <IconReload />
                 </ActionIcon>
               </Tooltip>
@@ -274,7 +173,7 @@ function ToolMessage(props: { message: ToolMessageType }) {
         <IconTool size={18} />
       </Avatar>
       <Stack gap="xs" w="100%">
-        <Tooltip withArrow label={isExpanded ? '閉じる' : '開く'} position="bottom-start" bg="black" c="white" fw={700}>
+        <Tooltip withArrow bg="black" c="white" fw={700} label={isExpanded ? '閉じる' : '開く'} position="bottom-start">
           <Group align="center" className={classes.collapseArea} gap="xs" onClick={() => setIsExpanded(!isExpanded)}>
             <Text c="white" className="select-none" fw={700}>
               ツール実行
@@ -315,7 +214,7 @@ export default function Message(props: {
     case 'user':
       return <UserMessage message={message as UserMessageType} onEdit={onEdit} />;
     case 'assistant':
-      return <AssistantMessage message={message as AssistantMessageType} isLast={isLast} onReload={onReload} />;
+      return <AssistantMessage isLast={isLast} message={message as AssistantMessageType} onReload={onReload} />;
     case 'tool':
       return <ToolMessage message={message as ToolMessageType} />;
     default:

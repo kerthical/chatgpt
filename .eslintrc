@@ -27,12 +27,11 @@
     "react/jsx-sort-props": [
       "warn",
       {
-        "callbacksLast": true,
+        "callbacksLast": false,
         "shorthandFirst": true,
         "shorthandLast": false,
         "reservedFirst": true,
-        "multiline": "last",
-        "noSortAlphabetically": true
+        "multiline": "last"
       }
     ],
     "react-hooks/exhaustive-deps": "off",

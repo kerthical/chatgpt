@@ -3,9 +3,10 @@ import { useGenerate } from '@/hooks/useGenerate.tsx';
 import { useGeneratingTask } from '@/hooks/useGeneratingTask.ts';
 import { useMessages } from '@/hooks/useMessages.ts';
 import { useNavbar } from '@/hooks/useNavbar.ts';
+import Attachment from '@/pages/App/Main/Attachment/Attachment.tsx';
 import Message from '@/pages/App/Main/Message/Message.tsx';
-import { Message as MessageType, UserMessage } from '@/types/Message.ts';
-import { getUrl, marked } from '@/utils/file.ts';
+import { Attachment as AttachmentType, Message as MessageType, UserMessage } from '@/types/Message.ts';
+import { getUrl } from '@/utils/utils.ts';
 import {
   ActionIcon,
   AppShell,
@@ -13,7 +14,6 @@ import {
   Center,
   FileButton,
   Group,
-  Image,
   ScrollArea,
   Stack,
   Text,
@@ -23,8 +23,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { randomId, useFocusWithin } from '@mantine/hooks';
-import { modals } from '@mantine/modals';
-import { IconArrowUp, IconBrandOpenai, IconPlaystationCircle, IconTrash } from '@tabler/icons-react';
+import { IconArrowUp, IconBrandOpenai, IconPlaystationCircle } from '@tabler/icons-react';
 
 export function Main() {
   const { isNavbarOpened, toggleNavbar } = useNavbar();
@@ -35,10 +34,7 @@ export function Main() {
   const form = useForm({
     initialValues: {
       message: '',
-      files: [] as {
-        name: string;
-        url: string;
-      }[],
+      files: [] as AttachmentType[],
     },
     validate: {
       message: value => value.trim().length <= 0,
@@ -70,7 +66,7 @@ export function Main() {
           label={isNavbarOpened ? 'サイドバーを閉じる' : 'サイドバーを開く'}
           position="right"
         >
-          <Box className={classes.sidebarChevronContainer} component="button" visibleFrom="sm" onClick={toggleNavbar}>
+          <Box className={classes.sidebarChevronContainer} component="button" onClick={toggleNavbar} visibleFrom="sm">
             <div className={isNavbarOpened ? classes.sidebarChevronUpperOpened : classes.sidebarChevronUpperClosed} />
             <div className={isNavbarOpened ? classes.sidebarChevronLowerOpened : classes.sidebarChevronLowerClosed} />
           </Box>
@@ -133,7 +129,7 @@ export function Main() {
             {form.values.files.length > 0 && (
               <Group
                 className={messageInputFocused ? classes.messageFileAreaFocused : classes.messageFileAreaUnfocused}
-                h={128}
+                h="100%"
                 p="md"
                 w="100%"
                 wrap="nowrap"
@@ -143,79 +139,17 @@ export function Main() {
                 }}
               >
                 {form.values.files.map((file, i) => (
-                  <Box key={i} bg="dark.8" className={classes.messageFileContainer} h="100%" p="xs" pos="relative">
-                    {file.url.startsWith('data:image/') ? (
-                      <Image
-                        className={classes.messageFile}
-                        h="100%"
-                        radius="md"
-                        src={file.url}
-                        onClick={() =>
-                          modals.open({
-                            children: <Image h="100%" radius="md" src={file.url} />,
-                            centered: true,
-                            withCloseButton: false,
-                            size: 'xl',
-                          })
-                        }
-                      />
-                    ) : (
-                      <Center h="100%" className={classes.messageFile}>
-                        <Text
-                          c="white"
-                          size="xs"
-                          onClick={() =>
-                            modals.open({
-                              children: (
-                                <Box
-                                  h="100%"
-                                  w="100%"
-                                  mt="lg"
-                                  className="prose prose-invert max-w-none"
-                                  dangerouslySetInnerHTML={{
-                                    __html: marked.parse(
-                                      '```' +
-                                        file.name.split('.').pop() +
-                                        '\n' +
-                                        atob(file.url.split(',')[1])
-                                          .split('\n')
-                                          .map(line => line.replace(/\r/g, ''))
-                                          .join('\n') +
-                                        '\n```',
-                                      {
-                                        gfm: true,
-                                        breaks: true,
-                                      },
-                                    ),
-                                  }}
-                                />
-                              ),
-                              title: file.name,
-                              centered: true,
-                              withCloseButton: false,
-                              size: 'lg',
-                              scrollAreaComponent: ScrollArea.Autosize,
-                            })
-                          }
-                        >
-                          {file.name}
-                        </Text>
-                      </Center>
-                    )}
-                    <ActionIcon
-                      className={classes.messageFileActionIcon}
-                      radius="sm"
-                      size={28}
-                      onClick={() => {
-                        form.setFieldValue(
-                          'files',
-                          form.values.files.filter((_, j) => i !== j),
-                        );
-                      }}
-                    >
-                      <IconTrash />
-                    </ActionIcon>
-                  </Box>
+                  <Attachment
+                    key={i}
+                    attachment={file}
+                    type="textarea"
+                    onDelete={() => {
+                      form.setFieldValue(
+                        'files',
+                        form.values.files.filter(f => f !== file),
+                      );
+                    }}
+                  />
                 ))}
               </Group>
             )}
@@ -247,32 +181,6 @@ export function Main() {
               }
               maw={{
                 sm: '720px',
-              }}
-              rightSection={
-                isGenerating ? (
-                  <ActionIcon c="white" radius="md" size={30} variant="transparent" onClick={cancelGeneration}>
-                    <IconPlaystationCircle />
-                  </ActionIcon>
-                ) : (
-                  <Tooltip withArrow bg="black" c="white" fw={700} label="メッセージを送信">
-                    <ActionIcon
-                      c="black"
-                      className={classes.sendButton}
-                      disabled={!form.isValid()}
-                      radius="md"
-                      size={30}
-                      type="submit"
-                      variant="white"
-                    >
-                      <IconArrowUp className={classes.sendButtonIcon} />
-                    </ActionIcon>
-                  </Tooltip>
-                )
-              }
-              styles={{
-                input: {
-                  background: 'transparent',
-                },
               }}
               onKeyDown={async e => {
                 if (e.keyCode === 13 && !e.shiftKey && !isGenerating) {
@@ -308,6 +216,32 @@ export function Main() {
                     ]);
                   }
                 }
+              }}
+              rightSection={
+                isGenerating ? (
+                  <ActionIcon c="white" onClick={cancelGeneration} radius="md" size={30} variant="transparent">
+                    <IconPlaystationCircle />
+                  </ActionIcon>
+                ) : (
+                  <Tooltip withArrow bg="black" c="white" fw={700} label="メッセージを送信">
+                    <ActionIcon
+                      c="black"
+                      className={classes.sendButton}
+                      disabled={!form.isValid()}
+                      radius="md"
+                      size={30}
+                      type="submit"
+                      variant="white"
+                    >
+                      <IconArrowUp className={classes.sendButtonIcon} />
+                    </ActionIcon>
+                  </Tooltip>
+                )
+              }
+              styles={{
+                input: {
+                  background: 'transparent',
+                },
               }}
               {...form.getInputProps('message', {
                 withError: false,

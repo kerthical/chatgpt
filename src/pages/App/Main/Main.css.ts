@@ -143,20 +143,3 @@ export const messageFileContainer = style({
 export const messageFile = style({
   cursor: 'pointer',
 });
-
-export const messageFileActionIcon = style({
-  position: 'absolute',
-  top: '-4px',
-  right: '-4px',
-  background: '#F03E3E',
-  opacity: 0,
-  ':hover': {
-    opacity: 1,
-    background: '#E03131',
-  },
-  selectors: {
-    [`${messageFileContainer}:hover &`]: {
-      opacity: 1,
-    },
-  },
-});
