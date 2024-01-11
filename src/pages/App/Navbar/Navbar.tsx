@@ -79,11 +79,11 @@ export function Navbar() {
                     アイデアの誘発
                   </Text>
                   <List>
-                    <List.Item>あなたはどこに住んでいますか？</List.Item>
-                    <List.Item>あなたの仕事は何ですか？</List.Item>
-                    <List.Item>あなたの趣味や興味は何ですか？</List.Item>
-                    <List.Item>何時間でも話せる話題は何ですか？</List.Item>
-                    <List.Item>あなたの目標は何ですか？</List.Item>
+                    <List.Item>- あなたはどこに住んでいますか？</List.Item>
+                    <List.Item>- あなたの仕事は何ですか？</List.Item>
+                    <List.Item>- あなたの趣味や興味は何ですか？</List.Item>
+                    <List.Item>- 何時間でも話せる話題は何ですか？</List.Item>
+                    <List.Item>- あなたの目標は何ですか？</List.Item>
                   </List>
                 </Stack>
               }
@@ -117,11 +117,11 @@ export function Navbar() {
                     アイデアの誘発
                   </Text>
                   <List>
-                    <List.Item>ChatGPTはどの程度正式またはカジュアルであるべきですか？</List.Item>
-                    <List.Item>一般的に、応答はどの程度の長さが適切でしょうか？</List.Item>
-                    <List.Item>どのように呼びかけられたいですか？</List.Item>
+                    <List.Item>- ChatGPTはどの程度正式またはカジュアルであるべきですか？</List.Item>
+                    <List.Item>- 一般的に、応答はどの程度の長さが適切でしょうか？</List.Item>
+                    <List.Item>- どのように呼びかけられたいですか？</List.Item>
                     <List.Item>
-                      ChatGPTはトピックに対して意見を持つべきですか？それとも中立的であるべきですか？
+                      - ChatGPTはトピックに対して意見を持つべきですか？それとも中立的であるべきですか？
                     </List.Item>
                   </List>
                 </Stack>
