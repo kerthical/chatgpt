@@ -200,7 +200,7 @@ Format:
       if (!selectedHistory) {
         const response = await openai.chat.completions.create({
           model: 'gpt-3.5-turbo-1106',
-          max_tokens: 4096,
+          max_tokens: 128,
           messages: [
             {
               role: 'user',
@@ -209,12 +209,29 @@ Format:
                 conversation.map(m => m.role + ': ' + m.content).join('\n---\n'),
             },
           ],
+          stream: true,
         });
 
-        setHistories(prev => [
-          ...prev,
-          new History(randomId(), response.choices[0].message.content ?? 'New Chat', model!.id, conversation),
-        ]);
+        let historyId: string | null = null;
+        for await (const chunk of response) {
+          const delta = chunk.choices[0].delta.content;
+          if (delta) {
+            if (historyId === null) {
+              historyId = randomId();
+              setHistories(prev => [...prev, new History(historyId!, delta, model!.id, conversation)]);
+            } else {
+              setHistories(prev =>
+                prev.map(h => {
+                  if (h.id === historyId) {
+                    return new History(h.id, h.name + delta, h.model, conversation);
+                  } else {
+                    return h;
+                  }
+                }),
+              );
+            }
+          }
+        }
       } else {
         setHistories(prev =>
           prev.map(h => {

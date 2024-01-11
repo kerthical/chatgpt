@@ -120,14 +120,18 @@ export class AssistantMessage implements Message {
     return {
       role: 'assistant',
       content: this.content,
-      tool_calls: this.tool_calls.map(tc => ({
-        id: tc.id,
-        type: 'function',
-        function: {
-          name: tc.name,
-          arguments: tc.arguments,
-        },
-      })),
+      ...(this.tool_calls.length > 0
+        ? {
+            tool_calls: this.tool_calls.map(tc => ({
+              id: tc.id,
+              type: 'function',
+              function: {
+                name: tc.name,
+                arguments: tc.arguments,
+              },
+            })),
+          }
+        : {}),
     };
   }
 

@@ -1,5 +1,6 @@
 import 'highlight.js/styles/github-dark.css';
 import * as classes from '@/pages/App/Main/Message/Message.css.ts';
+import { useGeneratingTask } from '@/hooks/useGeneratingTask.ts';
 import { useHistories } from '@/hooks/useHistories.ts';
 import { useModel } from '@/hooks/useModel.ts';
 import {
@@ -181,6 +182,7 @@ function AssistantMessage(props: { message: AssistantMessageType; isLast: boolea
   const { message, isLast, onReload } = props;
   const { model } = useModel();
   const { histories } = useHistories();
+  const { isGenerating } = useGeneratingTask();
   const historyModel = histories.find(h => h.messages.some(m => m.id === message?.id))?.model;
   const modelName = historyModel ? models.find(m => m.id === historyModel)?.name : model?.name;
 
@@ -205,7 +207,7 @@ function AssistantMessage(props: { message: AssistantMessageType; isLast: boolea
             c="gray"
             className={`prose prose-invert break-words ${classes.messageContent}`}
             dangerouslySetInnerHTML={{
-              __html: marked.parse(message.content, {
+              __html: marked.parse(message.content + (isGenerating ? '●' : ''), {
                 gfm: true,
                 breaks: true,
               }),
