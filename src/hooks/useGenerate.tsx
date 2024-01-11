@@ -4,6 +4,7 @@ import { useMessages } from '@/hooks/useMessages.ts';
 import { useModel } from '@/hooks/useModel.ts';
 import { History } from '@/types/History.ts';
 import { AssistantMessage, Message, ToolMessage, UserMessage } from '@/types/Message.ts';
+import { getPDFContent } from '@/utils/file.ts';
 import { randomId } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { IconCircleX } from '@tabler/icons-react';
@@ -28,7 +29,6 @@ export function useGenerate() {
 
       const completion = await openai.chat.completions.create({
         model: model!.id,
-        max_tokens: 4096,
         stream: true,
         messages: [
           {
@@ -151,7 +151,6 @@ Format:
                 if (fileBase64?.startsWith('data:image/')) {
                   const response = await openai.chat.completions.create({
                     model: 'gpt-4-vision-preview',
-                    max_tokens: 4096,
                     messages: [
                       {
                         role: 'user',
@@ -174,6 +173,8 @@ Format:
                     ],
                   });
                   fileContent = response.choices[0].message.content ?? '<LOAD_ERROR>';
+                } else if (fileBase64?.startsWith('data:application/pdf')) {
+                  fileContent = await getPDFContent(fileBase64);
                 } else {
                   fileContent = fileBase64
                     ? atob(fileBase64.split(',')[1])

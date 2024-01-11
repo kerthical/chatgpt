@@ -94,6 +94,30 @@ function UserMessage(props: { message: UserMessageType; onEdit: (newContent: str
                       }
                     />
                   </Box>
+                ) : file.url.startsWith('data:application/pdf') ? (
+                  <Box
+                    key={i}
+                    bg="dark.8"
+                    className={classes.messageFileContainer}
+                    h={64}
+                    w={128}
+                    onClick={() =>
+                      modals.open({
+                        children: <Text>TODO</Text>,
+                        title: file.name,
+                        centered: true,
+                        withCloseButton: false,
+                        size: 'lg',
+                        scrollAreaComponent: ScrollArea.Autosize,
+                      })
+                    }
+                  >
+                    <Center h="100%">
+                      <Text c="white" size="xs">
+                        {file.name}
+                      </Text>
+                    </Center>
+                  </Box>
                 ) : (
                   <Box
                     key={i}
@@ -247,7 +271,7 @@ function ToolMessage(props: { message: ToolMessageType }) {
   return (
     <Group align="start" className={classes.messageContainer} gap="xs" px="md" py="xs" w="100%" wrap="nowrap">
       <Avatar mih={26} miw={26} size={26}>
-        <IconTool />
+        <IconTool size={18} />
       </Avatar>
       <Stack gap="xs" w="100%">
         <Tooltip withArrow label={isExpanded ? '閉じる' : '開く'} position="bottom-start" bg="black" c="white" fw={700}>

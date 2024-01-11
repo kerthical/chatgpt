@@ -2,8 +2,9 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import react from '@vitejs/plugin-react';
 import jotaiDebugLabel from 'jotai/babel/plugin-debug-label';
 import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh';
+import path from 'node:path';
 import { defineConfig } from 'vite';
-import { viteSingleFile } from 'vite-plugin-singlefile';
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 export default defineConfig({
   plugins: [
@@ -13,18 +14,15 @@ export default defineConfig({
       },
     }),
     vanillaExtractPlugin(),
-    viteSingleFile(),
+    topLevelAwait(),
   ],
-  root: 'src',
-  build: {
-    outDir: '../dist',
-  },
   resolve: {
     alias: {
-      '@/': `${__dirname}/src/`,
+      '@/': `${path.resolve(__dirname, 'src')}/`,
     },
   },
   esbuild: {
     legalComments: 'none',
   },
+  assetsInclude: ['node_modules/pdfjs-dist/cmaps/**'],
 });
