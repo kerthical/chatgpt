@@ -1,6 +1,6 @@
 import 'highlight.js/styles/github-dark.css';
 import * as classes from '@/pages/App/Main/Message/Message.css.ts';
-import { Message as MessageType } from '@/types/Message.ts';
+import { Message as MessageType, UserMessage } from '@/types/Message.ts';
 import { ActionIcon, Avatar, Box, Button, Center, Group, Image, Stack, Text, Textarea, Tooltip } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { IconBrandOpenai, IconClipboard, IconEdit, IconReload } from '@tabler/icons-react';
@@ -29,26 +29,8 @@ export default function Message(props: {
     }),
   );
 
-  const images = Array.isArray(message.content)
-    ? message.content
-        .filter(c => c.type === 'image_url')
-        .map(
-          c =>
-            c as {
-              type: 'image_url';
-              image_url: {
-                url: string;
-                detail: 'high';
-              };
-            },
-        )
-    : [];
-
-  const textContent = Array.isArray(message.content)
-    ? (message.content.find(c => c.type === 'text') as { type: 'text'; text: string }).text
-    : message.content ?? '';
-
-  const [editingContent, setEditingContent] = useState(textContent);
+  const images = message instanceof UserMessage ? message.files.filter(f => f.url.startsWith('data:image/')) : [];
+  const [editingContent, setEditingContent] = useState(message.content);
   const [isEditing, setIsEditing] = useState(false);
 
   return (
@@ -84,7 +66,7 @@ export default function Message(props: {
                 c="gray"
                 className={`prose prose-invert break-words ${classes.messageContent}`}
                 dangerouslySetInnerHTML={{
-                  __html: marked.parse(textContent, {
+                  __html: marked.parse(message.content, {
                     gfm: true,
                     breaks: true,
                   }),
@@ -98,10 +80,10 @@ export default function Message(props: {
                         className={classes.messageFileImage}
                         h="100%"
                         radius="md"
-                        src={image.image_url.url}
+                        src={image}
                         onClick={() =>
                           modals.open({
-                            children: <Image h="100%" radius="md" src={image.image_url.url} w="100%" />,
+                            children: <Image h="100%" radius="md" src={image} w="100%" />,
                             centered: true,
                             withCloseButton: false,
                             size: 'xl',
@@ -128,7 +110,7 @@ export default function Message(props: {
                 variant="outline"
                 onClick={() => {
                   setIsEditing(false);
-                  setEditingContent(textContent);
+                  setEditingContent(message.content);
                 }}
               >
                 キャンセル
@@ -150,7 +132,7 @@ export default function Message(props: {
                       size={20}
                       variant="transparent"
                       onClick={async () => {
-                        await navigator.clipboard.writeText(textContent);
+                        await navigator.clipboard.writeText(message.content);
                       }}
                     >
                       <IconClipboard />

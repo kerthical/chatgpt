@@ -2,109 +2,62 @@ import { useGeneratingTask } from '@/hooks/useGeneratingTask.ts';
 import { useHistories } from '@/hooks/useHistories.ts';
 import { useMessages } from '@/hooks/useMessages.ts';
 import { useModel } from '@/hooks/useModel.ts';
-import { Message, toOpenAIMessage } from '@/types/Message.ts';
+import { History } from '@/types/History.ts';
+import { AssistantMessage, Message } from '@/types/Message.ts';
 import { randomId } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { IconCircleX } from '@tabler/icons-react';
 import { OpenAI } from 'openai';
 
 export function useGenerate() {
-  const { selectedHistory, setHistories, selectHistory } = useHistories();
   const { setGenerationTask, setGenerating, cancelGeneration } = useGeneratingTask();
-  const { setMessages } = useMessages();
+  const { setMessages, appendMessage, editMessage } = useMessages();
+  const { setHistories } = useHistories();
   const { model } = useModel();
 
   async function generate(messages: Message[]) {
     try {
       cancelGeneration();
-      setGenerating(true);
       const openai = new OpenAI({
         apiKey: localStorage.getItem('apiKey')!,
         dangerouslyAllowBrowser: true,
       });
 
+      const conversation = messages.slice();
       setMessages(messages);
 
       const completion = await openai.chat.completions.create({
         model: model!.id,
         max_tokens: 4096,
         stream: true,
-        messages: messages.map(toOpenAIMessage),
+        messages: messages.map(m => m.toOpenAIMessage()),
       });
 
+      setGenerating(true);
       setGenerationTask(completion);
 
       let index = 0;
-      let content = '';
-      let assistantId = '';
       for await (const chunk of completion) {
-        const id = chunk.id;
         const delta = chunk.choices[0].delta.content;
         if (delta) {
           if (index === 0) {
-            setMessages(prev => [
-              ...prev,
-              {
-                id,
-                role: 'assistant',
-                content: delta,
-              },
-            ]);
+            appendMessage(new AssistantMessage(chunk.id, delta));
+            conversation.push(new AssistantMessage(chunk.id, delta));
           } else {
-            setMessages(prev =>
-              prev.map(item =>
-                item.id === id
-                  ? {
-                      ...item,
-                      content: item.content + delta,
-                    }
-                  : item,
-              ),
-            );
+            editMessage(chunk.id, prev => {
+              (prev as AssistantMessage).appendContent(delta);
+              return prev;
+            });
+            (conversation[conversation.length - 1] as AssistantMessage).appendContent(delta);
           }
           index++;
-          content += delta;
-          assistantId = id;
         }
       }
 
       setGenerating(false);
       setGenerationTask(null);
 
-      const conversation = [
-        ...messages,
-        {
-          id: assistantId,
-          role: 'assistant',
-          content: content,
-        },
-      ];
-      const savedHistory = JSON.parse(localStorage.getItem('history') || '[]');
-      if (selectedHistory) {
-        savedHistory.find((h: { id: string }) => h.id === selectedHistory.id)!.messages = conversation;
-      } else {
-        const summarizeCompletion = await openai.chat.completions.create({
-          model: 'gpt-3.5-turbo-1106',
-          messages: [
-            {
-              role: 'user',
-              content:
-                'Create an appropriate head title of 3~5 words that summarizes this conversation. The response should only include the title content, no other information.\n\n' +
-                conversation.map(m => `${m.role}:\n${m.content}\n`).join('\n---\n'),
-            },
-          ],
-        });
-        const id = randomId();
-        savedHistory.push({
-          id,
-          name: summarizeCompletion.choices[0].message.content,
-          model: model?.id,
-          messages: conversation,
-        });
-        selectHistory(id);
-      }
-
-      setHistories(savedHistory);
+      setHistories(prev => [...prev, new History(randomId(), 'New Chat', model!.id, conversation)]);
     } catch (e) {
       notifications.show({
         color: 'red',

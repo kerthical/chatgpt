@@ -5,7 +5,8 @@ import { useMessages } from '@/hooks/useMessages.ts';
 import { useModel } from '@/hooks/useModel.ts';
 import { useNavbar } from '@/hooks/useNavbar.ts';
 import Message from '@/pages/App/Main/Message/Message.tsx';
-import { Message as MessageType } from '@/types/Message.ts';
+import { Message as MessageType, UserMessage } from '@/types/Message.ts';
+import { getUrl } from '@/utils/file.ts';
 import {
   ActionIcon,
   AppShell,
@@ -36,7 +37,10 @@ export function Main() {
   const form = useForm({
     initialValues: {
       message: '',
-      files: [] as File[],
+      files: [] as {
+        name: string;
+        url: string;
+      }[],
     },
     validate: {
       message: value => value.trim().length <= 0,
@@ -44,62 +48,9 @@ export function Main() {
     validateInputOnChange: true,
   });
 
-  async function generateWithNewMessage(messageOverride?: string) {
+  async function generateWithNewMessage() {
     form.reset();
-    await generate([
-      ...messages,
-      {
-        id: randomId(),
-        role: 'user',
-        content: await formToContent(messageOverride),
-      },
-    ] as MessageType[]);
-  }
-
-  async function formToContent(messageOverride?: string) {
-    function fileToBase64(file: File) {
-      return new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = error => reject(error);
-      });
-    }
-
-    async function toImageContent(file: File) {
-      return {
-        type: 'image_url',
-        image_url: {
-          url: await fileToBase64(file),
-          detail: 'high',
-        },
-      };
-    }
-
-    const message = form.values.message.trim();
-    const files = form.values.files.filter(file => file.type.indexOf('image') !== -1);
-
-    if (messageOverride) {
-      return [
-        {
-          type: 'text',
-          text: messageOverride,
-        },
-        ...(await Promise.all(files.map(toImageContent))),
-      ];
-    }
-
-    if (message.length <= 0) {
-      return await Promise.all(files.map(toImageContent));
-    }
-
-    return [
-      {
-        type: 'text',
-        text: message,
-      },
-      ...(await Promise.all(files.map(toImageContent))),
-    ];
+    await generate([...messages, new UserMessage(randomId(), form.values.message, form.values.files)] as MessageType[]);
   }
 
   return (
@@ -153,12 +104,7 @@ export function Main() {
                     onEdit={async newContent => {
                       const newState = messages.slice(0, i + 1);
                       if (Array.isArray(newState[i].content)) {
-                        (
-                          (newState[i].content as { type: string }[]).find(c => c.type === 'text') as {
-                            type: string;
-                            text: string;
-                          }
-                        ).text = newContent;
+                        newState[0].content = newContent;
                       } else {
                         newState[i].content = newContent;
                       }
@@ -184,10 +130,7 @@ export function Main() {
             sm: 'xl',
           }}
         >
-          <form
-            className="flex w-full flex-col items-center"
-            onSubmit={form.onSubmit(async ({ message }) => await generateWithNewMessage(message))}
-          >
+          <form className="flex w-full flex-col items-center" onSubmit={form.onSubmit(generateWithNewMessage)}>
             {model?.name === 'GPT-4' && form.values.files.length > 0 && (
               <Group
                 className={messageInputFocused ? classes.messageFileAreaFocused : classes.messageFileAreaUnfocused}
@@ -206,10 +149,10 @@ export function Main() {
                       className={classes.messageFileImage}
                       h="100%"
                       radius="md"
-                      src={URL.createObjectURL(file)}
+                      src={file.url}
                       onClick={() =>
                         modals.open({
-                          children: <Image h="100%" radius="md" src={URL.createObjectURL(file)} />,
+                          children: <Image h="100%" radius="md" src={file.url} />,
                           centered: true,
                           withCloseButton: false,
                           size: 'xl',
@@ -246,9 +189,11 @@ export function Main() {
                 model?.name === 'GPT-4' && (
                   <FileButton
                     multiple
-                    accept="image/png,image/jpeg"
-                    onChange={e => {
-                      form.setFieldValue('files', [...form.values.files, ...e]);
+                    onChange={async e => {
+                      form.setFieldValue('files', [
+                        ...form.values.files,
+                        ...(await Promise.all(e.map(async f => ({ name: f.name, url: await getUrl(f) })))),
+                      ]);
                     }}
                   >
                     {props => (
@@ -297,17 +242,29 @@ export function Main() {
                   form.setFieldValue('message', form.values.message + '\n');
                 }
               }}
-              onPaste={e => {
+              onPaste={async e => {
                 const items = e.clipboardData.items;
                 if (items.length > 0 && items[0].type.indexOf('image') !== -1) {
                   const file = items[0].getAsFile();
                   if (file) {
-                    form.setFieldValue('files', [...form.values.files, file]);
+                    form.setFieldValue('files', [
+                      ...form.values.files,
+                      {
+                        name: file.name,
+                        url: await getUrl(file),
+                      },
+                    ]);
                   }
                 } else {
                   const file = e.clipboardData.files[0];
                   if (file && file.type.indexOf('image') !== -1) {
-                    form.setFieldValue('files', [...form.values.files, file]);
+                    form.setFieldValue('files', [
+                      ...form.values.files,
+                      {
+                        name: file.name,
+                        url: await getUrl(file),
+                      },
+                    ]);
                   }
                 }
               }}
