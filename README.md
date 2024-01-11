@@ -1,6 +1,6 @@
 <div align="center">
     <h1>ChatGPT</h1>
-    <p>OpenAI's ChatGPT clone website by single html file with api key</p>
+    <p>OpenAI's ChatGPT clone website with api key</p>
     <p><b> ⚠️ This project is under development. ⚠️ </b></p>
 </div>
 
