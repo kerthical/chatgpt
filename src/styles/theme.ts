@@ -22,6 +22,25 @@ export const theme: MantineThemeOverride = createTheme({
   defaultRadius: 'md',
   fontFamily:
     'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";',
+  components: {
+    Modal: {
+      styles: {
+        header: {
+          background: '#202123',
+          borderBottom: '1px solid #ffffff22',
+        },
+        content: {
+          background: '#202123',
+        },
+      },
+      defaultProps: {
+        overlayProps: {
+          backgroundOpacity: 0.55,
+          blur: 3,
+        },
+      },
+    },
+  },
 });
 
 export const vars = themeToVars(theme);

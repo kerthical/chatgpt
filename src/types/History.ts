@@ -1,5 +1,4 @@
-import { Message, fromJSONtoMessage, fromMessageToJSON } from '@/types/Message.ts';
-import { randomId } from '@mantine/hooks';
+import { Message, fromJSONtoMessage } from '@/types/Message.ts';
 
 export function fromJSONtoHistory(history: unknown) {
   if (!history) return null;
@@ -19,23 +18,13 @@ export function fromJSONtoHistory(history: unknown) {
     history['model'],
     history['messages']
       .map((m: object) => fromJSONtoMessage(m))
-      .filter(m => !m)
+      .filter(m => m !== null)
       .map(m => m!),
   );
 }
-
-export function fromHistoryToJSON(history: History) {
-  return {
-    id: history.id,
-    name: history.name,
-    model: history.model,
-    messages: history.messages.map(m => fromMessageToJSON(m)),
-  };
-}
-
 export class History {
   constructor(
-    public id: string = randomId(),
+    public id: string,
     public name: string,
     public model: string,
     public messages: Message[] = [],
@@ -43,5 +32,14 @@ export class History {
 
   addMessage(message: Message) {
     this.messages.push(message);
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      model: this.model,
+      messages: this.messages.map(m => m.toJSON()),
+    };
   }
 }

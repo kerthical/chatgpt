@@ -1,10 +1,20 @@
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import react from '@vitejs/plugin-react';
+import jotaiDebugLabel from 'jotai/babel/plugin-debug-label';
+import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh';
 import { defineConfig } from 'vite';
 import { viteSingleFile } from 'vite-plugin-singlefile';
 
 export default defineConfig({
-  plugins: [react(), vanillaExtractPlugin(), viteSingleFile()],
+  plugins: [
+    react({
+      babel: {
+        plugins: [jotaiDebugLabel, jotaiReactRefresh],
+      },
+    }),
+    vanillaExtractPlugin(),
+    viteSingleFile(),
+  ],
   root: 'src',
   build: {
     outDir: '../dist',

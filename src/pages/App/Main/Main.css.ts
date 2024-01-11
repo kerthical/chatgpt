@@ -140,7 +140,7 @@ export const messageFileContainer = style({
   aspectRatio: '1 / 1',
 });
 
-export const messageFileImage = style({
+export const messageFile = style({
   cursor: 'pointer',
 });
 

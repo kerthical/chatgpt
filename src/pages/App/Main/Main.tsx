@@ -2,11 +2,10 @@ import * as classes from '@/pages/App/Main/Main.css.ts';
 import { useGenerate } from '@/hooks/useGenerate.tsx';
 import { useGeneratingTask } from '@/hooks/useGeneratingTask.ts';
 import { useMessages } from '@/hooks/useMessages.ts';
-import { useModel } from '@/hooks/useModel.ts';
 import { useNavbar } from '@/hooks/useNavbar.ts';
 import Message from '@/pages/App/Main/Message/Message.tsx';
 import { Message as MessageType, UserMessage } from '@/types/Message.ts';
-import { getUrl } from '@/utils/file.ts';
+import { getUrl, marked } from '@/utils/file.ts';
 import {
   ActionIcon,
   AppShell,
@@ -32,7 +31,6 @@ export function Main() {
   const { messages, setMessages } = useMessages();
   const { isGenerating, cancelGeneration } = useGeneratingTask();
   const { generate } = useGenerate();
-  const { model } = useModel();
   const { ref: messageInputRef, focused: messageInputFocused } = useFocusWithin();
   const form = useForm({
     initialValues: {
@@ -112,7 +110,8 @@ export function Main() {
                       await generate(newState);
                     }}
                     onReload={async () => {
-                      const newState = messages.slice(0, i);
+                      const index = messages.slice(0, i).findLastIndex(m => m instanceof UserMessage);
+                      const newState = messages.slice(0, index + 1);
                       setMessages(newState);
                       await generate(newState);
                     }}
@@ -131,7 +130,7 @@ export function Main() {
           }}
         >
           <form className="flex w-full flex-col items-center" onSubmit={form.onSubmit(generateWithNewMessage)}>
-            {model?.name === 'GPT-4' && form.values.files.length > 0 && (
+            {form.values.files.length > 0 && (
               <Group
                 className={messageInputFocused ? classes.messageFileAreaFocused : classes.messageFileAreaUnfocused}
                 h={128}
@@ -145,20 +144,64 @@ export function Main() {
               >
                 {form.values.files.map((file, i) => (
                   <Box key={i} bg="dark.8" className={classes.messageFileContainer} h="100%" p="xs" pos="relative">
-                    <Image
-                      className={classes.messageFileImage}
-                      h="100%"
-                      radius="md"
-                      src={file.url}
-                      onClick={() =>
-                        modals.open({
-                          children: <Image h="100%" radius="md" src={file.url} />,
-                          centered: true,
-                          withCloseButton: false,
-                          size: 'xl',
-                        })
-                      }
-                    />
+                    {file.url.startsWith('data:image/') ? (
+                      <Image
+                        className={classes.messageFile}
+                        h="100%"
+                        radius="md"
+                        src={file.url}
+                        onClick={() =>
+                          modals.open({
+                            children: <Image h="100%" radius="md" src={file.url} />,
+                            centered: true,
+                            withCloseButton: false,
+                            size: 'xl',
+                          })
+                        }
+                      />
+                    ) : (
+                      <Center h="100%" className={classes.messageFile}>
+                        <Text
+                          c="white"
+                          size="xs"
+                          onClick={() =>
+                            modals.open({
+                              children: (
+                                <Box
+                                  h="100%"
+                                  w="100%"
+                                  mt="lg"
+                                  className="prose prose-invert max-w-none"
+                                  dangerouslySetInnerHTML={{
+                                    __html: marked.parse(
+                                      '```' +
+                                        file.name.split('.').pop() +
+                                        '\n' +
+                                        atob(file.url.split(',')[1])
+                                          .split('\n')
+                                          .map(line => line.replace(/\r/g, ''))
+                                          .join('\n') +
+                                        '\n```',
+                                      {
+                                        gfm: true,
+                                        breaks: true,
+                                      },
+                                    ),
+                                  }}
+                                />
+                              ),
+                              title: file.name,
+                              centered: true,
+                              withCloseButton: false,
+                              size: 'lg',
+                              scrollAreaComponent: ScrollArea.Autosize,
+                            })
+                          }
+                        >
+                          {file.name}
+                        </Text>
+                      </Center>
+                    )}
                     <ActionIcon
                       className={classes.messageFileActionIcon}
                       radius="sm"
@@ -180,29 +223,27 @@ export function Main() {
               ref={messageInputRef}
               autoFocus
               autosize
-              className={model?.name === 'GPT-4' && form.values.files.length > 0 ? classes.messageInputWithFile : ''}
+              className={form.values.files.length > 0 ? classes.messageInputWithFile : ''}
               placeholder="ChatGPTにメッセージを送る..."
               radius="lg"
               size="lg"
               w="100%"
               leftSection={
-                model?.name === 'GPT-4' && (
-                  <FileButton
-                    multiple
-                    onChange={async e => {
-                      form.setFieldValue('files', [
-                        ...form.values.files,
-                        ...(await Promise.all(e.map(async f => ({ name: f.name, url: await getUrl(f) })))),
-                      ]);
-                    }}
-                  >
-                    {props => (
-                      <ActionIcon c="white" radius="md" size={30} variant="transparent" {...props}>
-                        <IconArrowUp />
-                      </ActionIcon>
-                    )}
-                  </FileButton>
-                )
+                <FileButton
+                  multiple
+                  onChange={async e => {
+                    form.setFieldValue('files', [
+                      ...form.values.files,
+                      ...(await Promise.all(e.map(async f => ({ name: f.name, url: await getUrl(f) })))),
+                    ]);
+                  }}
+                >
+                  {props => (
+                    <ActionIcon c="white" radius="md" size={30} variant="transparent" {...props}>
+                      <IconArrowUp />
+                    </ActionIcon>
+                  )}
+                </FileButton>
               }
               maw={{
                 sm: '720px',

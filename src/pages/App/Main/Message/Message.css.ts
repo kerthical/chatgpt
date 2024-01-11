@@ -32,8 +32,26 @@ globalStyle(
 export const messageFileContainer = style({
   borderRadius: '12px',
   aspectRatio: '1 / 1',
-});
-
-export const messageFileImage = style({
   cursor: 'pointer',
 });
+
+export const collapseArea = style({
+  cursor: 'pointer',
+});
+
+const collapseIcon = style({
+  transition: 'transform 0.2s ease-in-out',
+});
+
+export const collapseIconOpened = style([
+  collapseIcon,
+  {
+    transform: 'rotate(180deg)',
+  },
+]);
+export const collapseIconClosed = style([
+  collapseIcon,
+  {
+    transform: 'rotate(0deg)',
+  },
+]);

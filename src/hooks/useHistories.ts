@@ -1,7 +1,7 @@
 import { useGeneratingTask } from '@/hooks/useGeneratingTask.ts';
 import { useMessages } from '@/hooks/useMessages.ts';
 import { useModel } from '@/hooks/useModel.ts';
-import { History, fromHistoryToJSON, fromJSONtoHistory } from '@/types/History.ts';
+import { History, fromJSONtoHistory } from '@/types/History.ts';
 import { atom, useAtom } from 'jotai';
 import { useEffect } from 'react';
 
@@ -20,19 +20,13 @@ export function useHistories() {
     setHistories(
       JSON.parse(localStorage.getItem('history') || '[]')
         .map(fromJSONtoHistory)
-        .filter((h: History | null) => !h)
+        .filter((h: History | null) => h !== null)
         .map((h: History | null) => h!),
     );
   }, []);
 
   useEffect(() => {
-    // TODO: historyが空になることが多い
-    localStorage.setItem('history', JSON.stringify(histories.map(h => fromHistoryToJSON(h))));
-  }, [histories]);
-
-  useEffect(() => {
-    if (!histories || !selectedHistoryId) return;
-
+    const selectedHistory = histories.find(h => h.id === selectedHistoryId);
     if (selectedHistory) {
       document.title = `ChatGPT - ${selectedHistory.name}`;
       setMessages(selectedHistory.messages);
@@ -42,7 +36,18 @@ export function useHistories() {
 
   return {
     histories,
-    setHistories,
+    setHistories: (histories: History[] | ((histories: History[]) => History[])) => {
+      if (typeof histories === 'function') {
+        setHistories(prev => {
+          const next = histories(prev);
+          localStorage.setItem('history', JSON.stringify(next.map(h => h.toJSON())));
+          return next;
+        });
+      } else {
+        setHistories(histories);
+        localStorage.setItem('history', JSON.stringify(histories.map(h => h.toJSON())));
+      }
+    },
     selectedHistory,
     selectHistory: setSelectedHistoryId,
     newHistory: () => {
