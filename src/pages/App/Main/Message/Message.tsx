@@ -26,7 +26,14 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import { IconBrandOpenai, IconClipboard, IconEdit, IconReload, IconTriangleFilled } from '@tabler/icons-react';
+import {
+  IconBrandOpenai,
+  IconClipboard,
+  IconEdit,
+  IconReload,
+  IconTool,
+  IconTriangleFilled,
+} from '@tabler/icons-react';
 import { useState } from 'react';
 
 function UserMessage(props: { message: UserMessageType; onEdit: (newContent: string) => void }) {
@@ -237,7 +244,9 @@ function ToolMessage(props: { message: ToolMessageType }) {
 
   return (
     <Group align="start" className={classes.messageContainer} gap="xs" px="md" py="xs" w="100%" wrap="nowrap">
-      <Avatar mih={26} miw={26} size={26} />
+      <Avatar mih={26} miw={26} size={26}>
+        <IconTool />
+      </Avatar>
       <Stack gap="xs" w="100%">
         <Tooltip withArrow label={isExpanded ? '閉じる' : '開く'} position="bottom-start" bg="black" c="white" fw={700}>
           <Group align="center" className={classes.collapseArea} gap="xs" onClick={() => setIsExpanded(!isExpanded)}>
