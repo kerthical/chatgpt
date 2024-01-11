@@ -3,7 +3,8 @@ import react from '@vitejs/plugin-react';
 import jotaiDebugLabel from 'jotai/babel/plugin-debug-label';
 import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh';
 import path from 'node:path';
-import { defineConfig } from 'vite';
+import { defineConfig, normalizePath, splitVendorChunkPlugin } from 'vite';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 import topLevelAwait from 'vite-plugin-top-level-await';
 
 export default defineConfig({
@@ -15,7 +16,24 @@ export default defineConfig({
     }),
     vanillaExtractPlugin(),
     topLevelAwait(),
+    splitVendorChunkPlugin(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: normalizePath(path.resolve(__dirname, 'node_modules/pdfjs-dist/cmaps')),
+          dest: 'assets',
+        },
+      ],
+    }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        chunkFileNames: 'assets/[hash].js',
+        entryFileNames: 'assets/[hash].js',
+      },
+    },
+  },
   resolve: {
     alias: {
       '@/': `${path.resolve(__dirname, 'src')}/`,
@@ -24,5 +42,4 @@ export default defineConfig({
   esbuild: {
     legalComments: 'none',
   },
-  assetsInclude: ['node_modules/pdfjs-dist/cmaps/**'],
 });
