@@ -2,17 +2,30 @@ import 'highlight.js/styles/github-dark.css';
 import * as classes from '@/pages/App/Main/Message/Message.css.ts';
 import { useGeneratingTask } from '@/hooks/useGeneratingTask.ts';
 import { useHistories } from '@/hooks/useHistories.ts';
+import { useMessages } from '@/hooks/useMessages.ts';
 import { useModel } from '@/hooks/useModel.ts';
 import Attachment from '@/pages/App/Main/Attachment/Attachment.tsx';
 import {
   AssistantMessage as AssistantMessageType,
   Message as MessageType,
-  ToolMessage as ToolMessageType,
+  ToolCall,
   UserMessage as UserMessageType,
 } from '@/types/Message.ts';
 import { models } from '@/utils/constants.tsx';
 import { marked } from '@/utils/utils.ts';
-import { ActionIcon, Avatar, Button, Center, Collapse, Group, Stack, Text, Textarea, Tooltip } from '@mantine/core';
+import {
+  ActionIcon,
+  Avatar,
+  Button,
+  Center,
+  Collapse,
+  Group,
+  Loader,
+  Stack,
+  Text,
+  Textarea,
+  Tooltip,
+} from '@mantine/core';
 import {
   IconBrandOpenai,
   IconClipboard,
@@ -61,9 +74,9 @@ function UserMessage(props: { message: UserMessageType; onEdit: (newContent: str
               }}
             />
           )}
-          {message.files.length > 0 && (
+          {message.attachments.length > 0 && (
             <Group h="100%" w="100%" wrap="nowrap">
-              {message.files.map((attachment, i) => (
+              {message.attachments.map((attachment, i) => (
                 <Attachment key={i} attachment={attachment} type="message" />
               ))}
             </Group>
@@ -136,6 +149,13 @@ function AssistantMessage(props: { message: AssistantMessageType; isLast: boolea
               }),
             }}
           />
+          {message.tool_calls.length > 0 && (
+            <Group h="100%" w="100%" wrap="nowrap">
+              {message.tool_calls.map((toolCall, i) => (
+                <ToolMessage key={i} toolCall={toolCall} />
+              ))}
+            </Group>
+          )}
           <Group className={classes.messageActions} gap={4}>
             <Tooltip withArrow bg="black" c="white" fw={700} label="Copy" position="bottom">
               <ActionIcon
@@ -163,9 +183,11 @@ function AssistantMessage(props: { message: AssistantMessageType; isLast: boolea
   );
 }
 
-function ToolMessage(props: { message: ToolMessageType }) {
-  const { message } = props;
+function ToolMessage(props: { toolCall: ToolCall }) {
+  const { toolCall } = props;
   const [isExpanded, setIsExpanded] = useState(false);
+  const { messages } = useMessages();
+  const result = messages.find(m => m.id === toolCall.id);
 
   return (
     <Group align="start" className={classes.messageContainer} gap="xs" px="md" py="xs" w="100%" wrap="nowrap">
@@ -176,7 +198,7 @@ function ToolMessage(props: { message: ToolMessageType }) {
         <Tooltip withArrow bg="black" c="white" fw={700} label={isExpanded ? '閉じる' : '開く'} position="bottom-start">
           <Group align="center" className={classes.collapseArea} gap="xs" onClick={() => setIsExpanded(!isExpanded)}>
             <Text c="white" className="select-none" fw={700}>
-              ツール実行
+              ツール実行 ({toolCall.name}関数)
             </Text>
             <ActionIcon c="gray" size={16} variant="transparent">
               <IconTriangleFilled className={isExpanded ? classes.collapseIconOpened : classes.collapseIconClosed} />
@@ -184,16 +206,36 @@ function ToolMessage(props: { message: ToolMessageType }) {
           </Group>
         </Tooltip>
         <Collapse className="lg:w-[calc(100%-115px)]" in={isExpanded}>
+          <Text c="white" className="select-none" fw={700}>
+            引数
+          </Text>
           <Text
             c="gray"
             className={`prose prose-invert break-words ${classes.messageContent}`}
             dangerouslySetInnerHTML={{
-              __html: marked.parse('```\n' + message.content + '\n```', {
+              __html: marked.parse('```json\n' + toolCall.arguments + '\n```', {
                 gfm: true,
                 breaks: true,
               }),
             }}
           />
+          <Text c="white" className="select-none" fw={700}>
+            結果
+          </Text>
+          {result ? (
+            <Text
+              c="gray"
+              className={`prose prose-invert break-words ${classes.messageContent}`}
+              dangerouslySetInnerHTML={{
+                __html: marked.parse('```\n' + result.content + '\n```', {
+                  gfm: true,
+                  breaks: true,
+                }),
+              }}
+            />
+          ) : (
+            <Loader size={28} />
+          )}
         </Collapse>
       </Stack>
     </Group>
@@ -208,15 +250,11 @@ export default function Message(props: {
 }) {
   const { isLast, message, onEdit, onReload } = props;
 
-  if (message.content === '') return null;
-
   switch (message.role) {
     case 'user':
       return <UserMessage message={message as UserMessageType} onEdit={onEdit} />;
     case 'assistant':
       return <AssistantMessage isLast={isLast} message={message as AssistantMessageType} onReload={onReload} />;
-    case 'tool':
-      return <ToolMessage message={message as ToolMessageType} />;
     default:
       return null;
   }

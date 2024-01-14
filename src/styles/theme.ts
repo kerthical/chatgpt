@@ -36,7 +36,7 @@ export const theme: MantineThemeOverride = createTheme({
       defaultProps: {
         overlayProps: {
           backgroundOpacity: 0.55,
-          blur: 3,
+          blur: 12,
         },
       },
     },

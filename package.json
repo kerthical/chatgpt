@@ -18,6 +18,7 @@
     "@mantine/vanilla-extract": "^7.4.1",
     "@tabler/icons-react": "^2.45.0",
     "@vanilla-extract/css": "^1.14.0",
+    "axios": "^1.6.5",
     "highlight.js": "^11.9.0",
     "jotai": "^2.6.1",
     "marked": "^11.1.1",
@@ -28,8 +29,8 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@tailwindcss/typography": "^0.5.10",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/react": "^18.2.47",
     "@types/react-dom": "^18.2.18",
     "@typescript-eslint/eslint-plugin": "^6.18.1",

@@ -183,8 +183,8 @@ export function Navbar() {
             px="sm"
             py="md"
             w={{
-              base: 260,
-              sm: 320,
+              base: 320,
+              sm: 260,
             }}
           >
             <Stack align="center" h="100%">

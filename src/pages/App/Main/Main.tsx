@@ -34,7 +34,7 @@ export function Main() {
   const form = useForm({
     initialValues: {
       message: '',
-      files: [] as AttachmentType[],
+      attachments: [] as AttachmentType[],
     },
     validate: {
       message: value => value.trim().length <= 0,
@@ -44,7 +44,10 @@ export function Main() {
 
   async function generateWithNewMessage() {
     form.reset();
-    await generate([...messages, new UserMessage(randomId(), form.values.message, form.values.files)] as MessageType[]);
+    await generate([
+      ...messages,
+      new UserMessage(randomId(), form.values.message, form.values.attachments),
+    ] as MessageType[]);
   }
 
   return (
@@ -126,7 +129,7 @@ export function Main() {
           }}
         >
           <form className="flex w-full flex-col items-center" onSubmit={form.onSubmit(generateWithNewMessage)}>
-            {form.values.files.length > 0 && (
+            {form.values.attachments.length > 0 && (
               <Group
                 className={messageInputFocused ? classes.messageFileAreaFocused : classes.messageFileAreaUnfocused}
                 h="100%"
@@ -138,15 +141,15 @@ export function Main() {
                   sm: '720px',
                 }}
               >
-                {form.values.files.map((file, i) => (
+                {form.values.attachments.map((file, i) => (
                   <Attachment
                     key={i}
                     attachment={file}
                     type="textarea"
                     onDelete={() => {
                       form.setFieldValue(
-                        'files',
-                        form.values.files.filter(f => f !== file),
+                        'attachments',
+                        form.values.attachments.filter(f => f !== file),
                       );
                     }}
                   />
@@ -157,7 +160,7 @@ export function Main() {
               ref={messageInputRef}
               autoFocus
               autosize
-              className={form.values.files.length > 0 ? classes.messageInputWithFile : ''}
+              className={form.values.attachments.length > 0 ? classes.messageInputWithFile : ''}
               placeholder="ChatGPTにメッセージを送る..."
               radius="lg"
               size="lg"
@@ -166,8 +169,8 @@ export function Main() {
                 <FileButton
                   multiple
                   onChange={async e => {
-                    form.setFieldValue('files', [
-                      ...form.values.files,
+                    form.setFieldValue('attachments', [
+                      ...form.values.attachments,
                       ...(await Promise.all(e.map(async f => ({ name: f.name, url: await getUrl(f) })))),
                     ]);
                   }}
@@ -196,8 +199,8 @@ export function Main() {
                 if (items.length > 0 && items[0].type.indexOf('image') !== -1) {
                   const file = items[0].getAsFile();
                   if (file) {
-                    form.setFieldValue('files', [
-                      ...form.values.files,
+                    form.setFieldValue('attachments', [
+                      ...form.values.attachments,
                       {
                         name: file.name,
                         url: await getUrl(file),
@@ -207,8 +210,8 @@ export function Main() {
                 } else {
                   const file = e.clipboardData.files[0];
                   if (file && file.type.indexOf('image') !== -1) {
-                    form.setFieldValue('files', [
-                      ...form.values.files,
+                    form.setFieldValue('attachments', [
+                      ...form.values.attachments,
                       {
                         name: file.name,
                         url: await getUrl(file),

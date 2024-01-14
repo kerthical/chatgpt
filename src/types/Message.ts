@@ -8,6 +8,7 @@ export interface Message {
   content: string;
 
   toOpenAIMessage(): ChatCompletionMessageParam;
+
   toJSON(): unknown;
 }
 
@@ -23,15 +24,17 @@ export function fromJSONtoMessage(message: unknown): Message | null {
 
   switch (message['role']) {
     case 'user':
-      if (!('files' in message)) return null;
-      if (!Array.isArray(message['files'])) return null;
-      return new UserMessage(message['id'], message['content'], message['files']);
+      if (!('attachments' in message)) return null;
+      if (!Array.isArray(message['attachments'])) return null;
+      return new UserMessage(message['id'], message['content'], message['attachments']);
     case 'assistant':
       if (!('tool_calls' in message)) return null;
       if (!Array.isArray(message['tool_calls'])) return null;
       return new AssistantMessage(message['id'], message['content'], message['tool_calls']);
     case 'tool':
-      return new ToolMessage(message['id'], message['content']);
+      if (!('func' in message)) return null;
+      if (typeof message['func'] !== 'string') return null;
+      return new ToolMessage(message['id'], message['func'], message['content']);
     default:
       return null;
   }
@@ -48,7 +51,7 @@ export class UserMessage implements Message {
   constructor(
     public id: string,
     public content: string,
-    public files: Attachment[],
+    public attachments: Attachment[],
   ) {
     this.role = 'user';
   }
@@ -59,7 +62,9 @@ export class UserMessage implements Message {
       content: [
         {
           type: 'text',
-          text: (this.files.length ? this.files.map(f => `- ${f.name}`).join('\n') + '\n---\n' : '') + this.content,
+          text:
+            (this.attachments.length > 0 ? this.attachments.map(f => `- ${f.name}`).join('\n') + '\n---\n' : '') +
+            this.content,
         },
       ],
     };
@@ -67,10 +72,10 @@ export class UserMessage implements Message {
 
   toJSON(): unknown {
     return {
-      id: this.id,
       role: this.role,
+      id: this.id,
       content: this.content,
-      files: this.files,
+      attachments: this.attachments,
     };
   }
 }
@@ -82,16 +87,14 @@ export type ToolCall = {
 };
 
 export class AssistantMessage implements Message {
-  id: string;
   role: 'assistant';
-  content: string;
-  tool_calls: ToolCall[];
 
-  constructor(id: string, content: string, tool_calls: ToolCall[]) {
-    this.id = id;
+  constructor(
+    public id: string,
+    public content: string,
+    public tool_calls: ToolCall[],
+  ) {
     this.role = 'assistant';
-    this.content = content;
-    this.tool_calls = tool_calls;
   }
 
   appendContent(content: string) {
@@ -141,8 +144,8 @@ export class AssistantMessage implements Message {
 
   toJSON(): unknown {
     return {
-      id: this.id,
       role: this.role,
+      id: this.id,
       content: this.content,
       tool_calls: this.tool_calls,
     };
@@ -150,14 +153,14 @@ export class AssistantMessage implements Message {
 }
 
 export class ToolMessage implements Message {
-  id: string;
   role: 'tool';
-  content: string;
 
-  constructor(id: string, content: string) {
-    this.id = id;
+  constructor(
+    public id: string,
+    public func: string,
+    public content: string,
+  ) {
     this.role = 'tool';
-    this.content = content;
   }
 
   toOpenAIMessage(): ChatCompletionMessageParam {
@@ -170,8 +173,9 @@ export class ToolMessage implements Message {
 
   toJSON(): unknown {
     return {
-      id: this.id,
       role: this.role,
+      id: this.id,
+      func: this.func,
       content: this.content,
     };
   }

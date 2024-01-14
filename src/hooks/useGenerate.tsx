@@ -34,13 +34,19 @@ export function useGenerate() {
         messages: [
           {
             role: 'system',
-            content: `You are a helpful assistant. Messages from users are passed in the following format A filename is passed, so if necessary, use the retrieve function to retrieve the contents and try to return an appropriate response. You are obliged to reply in the same language as the user.
+            content: `You are a helpful assistant. Messages from users are passed in the following format If necessary, use the appropriate functions to retrieve external data and respond appropriately. You are obligated to reply in the same language as the user.
 
-Format:
+Format when a file is provided:
 """
-<files>
+<FileList>
 ---
-<message>
+<Message>
+"""
+
+Format when no file is provided:
+
+"""
+<Message>
 """${customMyself ? "\n\nThe user's profile is as follows:\n" + customMyself : ''}${
               customInstruction
                 ? '\n\nThe user wants you (the assistant) to return the following:\n' + customInstruction
@@ -132,7 +138,11 @@ Format:
         }
 
         if (chunk.choices[0].finish_reason === 'stop') break;
-        if (chunk.choices[0].finish_reason === 'length') break;
+        if (chunk.choices[0].finish_reason === 'length') {
+          await generate(conversation);
+          break;
+        }
+
         if (chunk.choices[0].finish_reason === 'tool_calls') {
           for (const toolCall of (conversation[conversation.length - 1] as AssistantMessage).tool_calls) {
             switch (toolCall.name) {
@@ -141,12 +151,12 @@ Format:
                 const fileBase64 = (
                   conversation.find(m => {
                     if (m instanceof UserMessage) {
-                      return m.files.some(f => f.name === fileName);
+                      return m.attachments.some(f => f.name === fileName);
                     } else {
                       return false;
                     }
                   }) as UserMessage
-                )?.files.find(f => f.name === fileName)?.url;
+                )?.attachments.find(f => f.name === fileName)?.url;
 
                 let fileContent: string;
                 if (fileBase64?.startsWith('data:image/')) {
@@ -185,8 +195,8 @@ Format:
                     : '<LOAD_ERROR>';
                 }
 
-                appendMessage(new ToolMessage(toolCall.id, `${fileName}:\n ${fileContent}`));
-                conversation.push(new ToolMessage(toolCall.id, `${fileName}:\n ${fileContent}`));
+                appendMessage(new ToolMessage(toolCall.id, 'retrieve', `${fileName}:\n ${fileContent}`));
+                conversation.push(new ToolMessage(toolCall.id, 'retrieve', `${fileName}:\n ${fileContent}`));
                 break;
               }
             }
