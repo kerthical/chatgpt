@@ -189,9 +189,6 @@ export function Main() {
                 if (e.keyCode === 13 && !e.shiftKey && !isGenerating) {
                   e.preventDefault();
                   await generateWithNewMessage();
-                } else if (e.keyCode === 13 && e.shiftKey) {
-                  e.preventDefault();
-                  form.setFieldValue('message', form.values.message + '\n');
                 }
               }}
               onPaste={async e => {

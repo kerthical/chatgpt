@@ -14,7 +14,7 @@ import { BadRequestError } from 'openai/error';
 export function useGenerate() {
   const { setGenerationTask, setGenerating, cancelGeneration, customMyself, customInstruction } = useGeneratingTask();
   const { setMessages, appendMessage, editMessage } = useMessages();
-  const { selectedHistory, setHistories } = useHistories();
+  const { selectedHistory, selectHistory, setHistories } = useHistories();
   const { model } = useModel();
 
   async function generate(messages: Message[]) {
@@ -162,6 +162,7 @@ Format when no file is provided:
                 if (fileBase64?.startsWith('data:image/')) {
                   const response = await openai.chat.completions.create({
                     model: 'gpt-4-vision-preview',
+                    max_tokens: 4096,
                     messages: [
                       {
                         role: 'user',
@@ -244,6 +245,8 @@ Format when no file is provided:
             }
           }
         }
+
+        selectHistory(historyId!);
       } else {
         setHistories(prev =>
           prev.map(h => {
