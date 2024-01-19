@@ -32,7 +32,7 @@ pdfjsLib.GlobalWorkerOptions.workerPort = new PdfJsWorker();
 export function getPDFDocument(url: string) {
   return pdfjsLib.getDocument({
     url: url,
-    cMapUrl: './assets/cmaps/',
+    cMapUrl: './cmaps/',
     cMapPacked: true,
     useWorkerFetch: false,
   }).promise;

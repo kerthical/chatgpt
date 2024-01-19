@@ -4,7 +4,6 @@ import jotaiDebugLabel from 'jotai/babel/plugin-debug-label';
 import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh';
 import path from 'node:path';
 import { defineConfig, normalizePath, splitVendorChunkPlugin } from 'vite';
-import { viteSingleFile } from 'vite-plugin-singlefile';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import topLevelAwait from 'vite-plugin-top-level-await';
 
@@ -22,11 +21,10 @@ export default defineConfig({
       targets: [
         {
           src: normalizePath(path.resolve(__dirname, 'node_modules/pdfjs-dist/cmaps')),
-          dest: 'assets',
+          dest: '.',
         },
       ],
     }),
-    viteSingleFile(),
   ],
   build: {
     rollupOptions: {
