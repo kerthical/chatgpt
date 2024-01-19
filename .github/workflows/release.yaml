@@ -18,7 +18,7 @@ jobs:
       - run: pnpm build
       - uses: softprops/action-gh-release@v1
         with:
-          files: dist/index.html
+          files: dist/*
           tag_name: ${{ github.event.inputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

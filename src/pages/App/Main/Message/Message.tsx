@@ -143,7 +143,7 @@ function AssistantMessage(props: { message: AssistantMessageType; isLast: boolea
             c="gray"
             className={`prose prose-invert break-words ${classes.messageContent}`}
             dangerouslySetInnerHTML={{
-              __html: marked.parse(message.content + (isGenerating ? '●' : ''), {
+              __html: marked.parse(message.content + (isGenerating && isLast ? '●' : ''), {
                 gfm: true,
                 breaks: true,
               }),

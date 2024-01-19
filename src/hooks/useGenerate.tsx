@@ -9,7 +9,7 @@ import { randomId } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { IconCircleX } from '@tabler/icons-react';
 import { APIError, OpenAI } from 'openai';
-import { BadRequestError } from 'openai/error';
+import { AuthenticationError, BadRequestError } from 'openai/error';
 
 export function useGenerate() {
   const { setGenerationTask, setGenerating, cancelGeneration, customMyself, customInstruction } = useGeneratingTask();
@@ -26,7 +26,7 @@ export function useGenerate() {
       });
 
       const conversation = messages.slice();
-      setMessages(messages);
+      setMessages(conversation);
 
       const completion = await openai.chat.completions.create({
         model: model!.id,
@@ -267,6 +267,10 @@ Format when no file is provided:
         } else {
           errorMessage = 'メッセージの長さが長すぎる可能性があります。メッセージを短くしてください。';
         }
+      } else if (e instanceof AuthenticationError) {
+        errorMessage = 'APIキーが正しく設定されていません。APIキーを設定してください。';
+        localStorage.removeItem('apiKey');
+        document.location.reload();
       } else if (e instanceof APIError) {
         errorMessage = 'APIの呼び出しに失敗しました。エラーの詳細はコンソールに記録されました。';
         console.error(e);

@@ -4,6 +4,7 @@ import jotaiDebugLabel from 'jotai/babel/plugin-debug-label';
 import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh';
 import path from 'node:path';
 import { defineConfig, normalizePath, splitVendorChunkPlugin } from 'vite';
+import { viteSingleFile } from 'vite-plugin-singlefile';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import topLevelAwait from 'vite-plugin-top-level-await';
 
@@ -25,12 +26,14 @@ export default defineConfig({
         },
       ],
     }),
+    viteSingleFile(),
   ],
   build: {
     rollupOptions: {
       output: {
-        chunkFileNames: 'assets/[hash].js',
-        entryFileNames: 'assets/[hash].js',
+        assetFileNames: '[hash][extname]',
+        chunkFileNames: '[hash].js',
+        entryFileNames: '[hash].js',
       },
     },
   },

@@ -27,7 +27,7 @@ import { IconArrowUp, IconBrandOpenai, IconPlaystationCircle } from '@tabler/ico
 
 export function Main() {
   const { isNavbarOpened, toggleNavbar } = useNavbar();
-  const { messages, setMessages } = useMessages();
+  const { messages } = useMessages();
   const { isGenerating, cancelGeneration } = useGeneratingTask();
   const { generate } = useGenerate();
   const { ref: messageInputRef, focused: messageInputFocused } = useFocusWithin();
@@ -105,13 +105,11 @@ export function Main() {
                       } else {
                         newState[i].content = newContent;
                       }
-                      setMessages(newState);
                       await generate(newState);
                     }}
                     onReload={async () => {
                       const index = messages.slice(0, i).findLastIndex(m => m instanceof UserMessage);
                       const newState = messages.slice(0, index + 1);
-                      setMessages(newState);
                       await generate(newState);
                     }}
                   />

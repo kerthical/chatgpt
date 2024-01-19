@@ -49,7 +49,11 @@ export function useHistories() {
       }
     },
     selectedHistory,
-    selectHistory: setSelectedHistoryId,
+    selectHistory: (id: string) => {
+      if (selectedHistoryId !== id) {
+        setSelectedHistoryId(id);
+      }
+    },
     newHistory: () => {
       cancelGeneration();
       setSelectedHistoryId(null);
