@@ -25,15 +25,6 @@ export function useHistories() {
     );
   }, []);
 
-  useEffect(() => {
-    const selectedHistory = histories.find(h => h.id === selectedHistoryId);
-    if (selectedHistory) {
-      document.title = `ChatGPT - ${selectedHistory.name}`;
-      setMessages(selectedHistory.messages);
-      selectModel(selectedHistory.model);
-    }
-  }, [selectedHistoryId]);
-
   return {
     histories,
     setHistories: (histories: History[] | ((histories: History[]) => History[])) => {
@@ -52,6 +43,13 @@ export function useHistories() {
     selectHistory: (id: string) => {
       if (selectedHistoryId !== id) {
         setSelectedHistoryId(id);
+
+        const selectedHistory = histories.find(h => h.id === id);
+        if (selectedHistory) {
+          document.title = `ChatGPT - ${selectedHistory.name}`;
+          setMessages(selectedHistory.messages);
+          selectModel(selectedHistory.model);
+        }
       }
     },
     newHistory: () => {
