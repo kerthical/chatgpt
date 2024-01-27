@@ -1,182 +1,111 @@
-import OpenAI from 'openai';
+/**
+ * Message attachment (e.g. image, pdf, etc.)
+ */
+export interface Attachment {
+  /**
+   * The UUID of the attachment
+   */
+  uuid: string;
 
-import ChatCompletionMessageParam = OpenAI.ChatCompletionMessageParam;
-
-export interface Message {
-  id: string;
-  role: 'user' | 'assistant' | 'tool';
-  content: string;
-
-  toOpenAIMessage(): ChatCompletionMessageParam;
-
-  toJSON(): unknown;
-}
-
-export function fromJSONtoMessage(message: unknown): Message | null {
-  if (!message) return null;
-  if (typeof message !== 'object') return null;
-  if (!('id' in message)) return null;
-  if (!('role' in message)) return null;
-  if (!('content' in message)) return null;
-  if (typeof message['id'] !== 'string') return null;
-  if (typeof message['role'] !== 'string') return null;
-  if (typeof message['content'] !== 'string') return null;
-
-  switch (message['role']) {
-    case 'user':
-      if (!('attachments' in message)) return null;
-      if (!Array.isArray(message['attachments'])) return null;
-      return new UserMessage(message['id'], message['content'], message['attachments']);
-    case 'assistant':
-      if (!('tool_calls' in message)) return null;
-      if (!Array.isArray(message['tool_calls'])) return null;
-      return new AssistantMessage(message['id'], message['content'], message['tool_calls']);
-    case 'tool':
-      if (!('func' in message)) return null;
-      if (typeof message['func'] !== 'string') return null;
-      return new ToolMessage(message['id'], message['func'], message['content']);
-    default:
-      return null;
-  }
-}
-
-export type Attachment = {
+  /**
+   * The name of the attachment
+   */
   name: string;
-  url: string;
-};
 
-export class UserMessage implements Message {
+  /**
+   * The URL of the attachment (base64 encoded. no remote url)
+   */
+  url: string;
+}
+
+/**
+ * A message from the user
+ */
+export interface UserMessage {
   role: 'user';
 
-  constructor(
-    public id: string,
-    public content: string,
-    public attachments: Attachment[],
-  ) {
-    this.role = 'user';
-  }
+  /**
+   * The UUID of the message
+   */
+  uuid: string;
 
-  toOpenAIMessage(): ChatCompletionMessageParam {
-    return {
-      role: 'user',
-      content: [
-        {
-          type: 'text',
-          text:
-            (this.attachments.length > 0 ? this.attachments.map(f => `- ${f.name}`).join('\n') + '\n---\n' : '') +
-            this.content,
-        },
-      ],
-    };
-  }
+  /**
+   * The content of the message
+   */
+  content: string;
 
-  toJSON(): unknown {
-    return {
-      role: this.role,
-      id: this.id,
-      content: this.content,
-      attachments: this.attachments,
-    };
-  }
+  /**
+   * The attachments of the message
+   */
+  attachments: Attachment[];
 }
 
-export type ToolCall = {
-  id: string;
-  name: string;
-  arguments: string;
-};
+/**
+ * Assistant tool call
+ */
+export interface ToolCall {
+  /**
+   * The UUID of the tool call
+   */
+  uuid: string;
 
-export class AssistantMessage implements Message {
+  /**
+   * The function name of the tool
+   */
+  name: string;
+
+  /**
+   * The arguments of the tool (JSON format)
+   */
+  arguments: string;
+
+  /**
+   * The output of the tool (if null, the tool is still running)
+   */
+  output: null | string;
+}
+
+/**
+ * A message from the assistant
+ */
+export interface AssistantMessage {
   role: 'assistant';
 
-  constructor(
-    public id: string,
-    public content: string,
-    public tool_calls: ToolCall[],
-  ) {
-    this.role = 'assistant';
-  }
+  /**
+   * The UUID of the message
+   */
+  uuid: string;
 
-  appendContent(content: string) {
-    this.content += content;
-  }
+  /**
+   * The content of the message
+   */
+  content: string;
 
-  appendToolCall(id: string | undefined, name: string | undefined, args: string | undefined) {
-    if (this.tool_calls.find(tc => tc.id === id) || id === undefined) {
-      this.tool_calls = this.tool_calls.map((tc, i) => {
-        if (tc.id === id || (i === 0 && id === undefined)) {
-          return {
-            id: id || tc.id,
-            name: name || tc.name,
-            arguments: args ? tc.arguments + args : tc.arguments,
-          };
-        } else {
-          return tc;
-        }
-      });
-    } else {
-      this.tool_calls.push({
-        id: id,
-        name: name || '',
-        arguments: args || '',
-      });
-    }
-  }
-
-  toOpenAIMessage(): ChatCompletionMessageParam {
-    return {
-      role: 'assistant',
-      content: this.content,
-      ...(this.tool_calls.length > 0
-        ? {
-            tool_calls: this.tool_calls.map(tc => ({
-              id: tc.id,
-              type: 'function',
-              function: {
-                name: tc.name,
-                arguments: tc.arguments,
-              },
-            })),
-          }
-        : {}),
-    };
-  }
-
-  toJSON(): unknown {
-    return {
-      role: this.role,
-      id: this.id,
-      content: this.content,
-      tool_calls: this.tool_calls,
-    };
-  }
+  /**
+   * The tool call of the message
+   */
+  toolCall: ToolCall | null;
 }
 
-export class ToolMessage implements Message {
-  role: 'tool';
+/**
+ * Type of message displayed on screen
+ */
+export type Message = AssistantMessage | UserMessage;
 
-  constructor(
-    public id: string,
-    public func: string,
-    public content: string,
-  ) {
-    this.role = 'tool';
-  }
+/**
+ * Checks if a message is a user message
+ * @param message The message to check
+ * @returns Whether the message is a user message
+ */
+export function isUserMessage(message: Message): message is UserMessage {
+  return message.role === 'user';
+}
 
-  toOpenAIMessage(): ChatCompletionMessageParam {
-    return {
-      role: 'tool',
-      tool_call_id: this.id,
-      content: this.content,
-    };
-  }
-
-  toJSON(): unknown {
-    return {
-      role: this.role,
-      id: this.id,
-      func: this.func,
-      content: this.content,
-    };
-  }
+/**
+ * Checks if a message is an assistant message
+ * @param message The message to check
+ * @returns Whether the message is an assistant message
+ */
+export function isAssistantMessage(message: Message): message is AssistantMessage {
+  return message.role === 'assistant';
 }

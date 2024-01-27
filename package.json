@@ -2,54 +2,109 @@
   "name": "chatgpt",
   "version": "0.0.1",
   "license": "WTFPL",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint . --ext .ts,.tsx --fix",
-    "format": "prettier --write ."
+    "dev": "vite dev -c src/vite.config.ts",
+    "build": "vite build -c src/vite.config.ts",
+    "lint": "run-p lint:*",
+    "lint:eslint": "eslint --fix --ignore-path .gitignore **/*.{js,jsx,ts,tsx}",
+    "lint:stylelint": "stylelint --fix --aei --ignore-path .gitignore **/*.{css,scss,sass}",
+    "lint:prettier": "prettier -wu --ignore-path .gitignore .",
+    "prepare": "husky"
   },
   "dependencies": {
-    "@mantine/core": "^7.4.1",
-    "@mantine/form": "^7.4.1",
-    "@mantine/hooks": "^7.4.1",
-    "@mantine/modals": "^7.4.1",
-    "@mantine/notifications": "^7.4.1",
-    "@mantine/vanilla-extract": "^7.4.1",
-    "@tabler/icons-react": "^2.45.0",
-    "@vanilla-extract/css": "^1.14.0",
-    "axios": "^1.6.5",
-    "highlight.js": "^11.9.0",
-    "jotai": "^2.6.1",
-    "marked": "^11.1.1",
-    "marked-highlight": "^2.1.0",
-    "openai": "^4.24.3",
-    "pdfjs-dist": "^4.0.379",
+    "@mantine/core": "^7.5.0",
+    "@mantine/form": "^7.5.0",
+    "@mantine/hooks": "^7.5.0",
+    "@mantine/notifications": "^7.5.0",
+    "@tabler/icons-react": "^2.46.0",
+    "jotai": "^2.6.3",
+    "openai": "^4.26.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.10",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@types/react": "^18.2.47",
+    "@commitlint/cli": "^18.6.0",
+    "@commitlint/config-conventional": "^18.6.0",
+    "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
-    "@typescript-eslint/eslint-plugin": "^6.18.1",
-    "@typescript-eslint/parser": "^6.18.1",
-    "@vanilla-extract/vite-plugin": "^3.9.3",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
     "@vitejs/plugin-react": "^4.2.1",
-    "cssnano": "^6.0.3",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-perfectionist": "^2.5.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-unused-imports": "^3.0.0",
-    "postcss": "^8.4.33",
-    "prettier": "^3.1.1",
-    "prettier-plugin-tailwindcss": "^0.5.11",
-    "tailwindcss": "^3.4.1",
+    "husky": "^9.0.6",
+    "lint-staged": "^15.2.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.2.4",
+    "stylelint": "^16.2.0",
+    "stylelint-config-idiomatic-order": "^10.0.0",
+    "stylelint-config-standard": "^36.0.0",
     "typescript": "^5.3.3",
-    "vite": "^5.0.11",
-    "vite-plugin-static-copy": "^1.0.0",
-    "vite-plugin-top-level-await": "^1.4.1"
+    "vite": "^5.0.12"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "arrowParens": "avoid"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "commonjs": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "prettier"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "*.ts",
+          "*.tsx"
+        ],
+        "plugins": [
+          "unused-imports"
+        ],
+        "extends": [
+          "plugin:react/recommended",
+          "plugin:react/jsx-runtime",
+          "plugin:react-hooks/recommended",
+          "plugin:perfectionist/recommended-natural",
+          "plugin:@typescript-eslint/recommended",
+          "plugin:@typescript-eslint/recommended-requiring-type-checking"
+        ],
+        "parser": "@typescript-eslint/parser",
+        "parserOptions": {
+          "project": "tsconfig.json"
+        },
+        "rules": {
+          "unused-imports/no-unused-imports": "warn",
+          "perfectionist/sort-interfaces": "off",
+          "perfectionist/sort-objects": "off",
+          "perfectionist/sort-object-types": "off"
+        }
+      }
+    ]
+  },
+  "stylelint": {
+    "extends": [
+      "stylelint-config-standard",
+      "stylelint-config-idiomatic-order"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "eslint --fix",
+    "*.{css,scss,sass}": "stylelint --fix",
+    "*": "prettier --write --ignore-unknown"
   }
 }
