@@ -1,8 +1,8 @@
 .item {
-    padding: 8px 12px;
-    border-radius: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
 
-    &:hover {
-        background: rgb(255 255 255 / 10%);
-    }
+  &:hover {
+    background: rgb(255 255 255 / 10%);
+  }
 }
