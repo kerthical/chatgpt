@@ -1,6 +1,9 @@
-import { Modify } from '@/types/modify';
-import { Flex, FlexProps } from '@mantine/core';
-import { ComponentPropsWithoutRef, FormEventHandler, forwardRef } from 'react';
+import type { Modify } from '@/types/modify';
+import type { FlexProps } from '@mantine/core';
+import type { ComponentPropsWithoutRef, FormEventHandler } from 'react';
+
+import { Flex } from '@mantine/core';
+import { forwardRef } from 'react';
 
 interface FlexFormProps
   extends Modify<

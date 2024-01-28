@@ -1,7 +1,9 @@
+import type { AssistantMessage, Attachment, Message } from '@/types/message';
+import type { PrimitiveAtom } from 'jotai';
+
 import { clientAtom } from '@/app/stores/client';
-import { AssistantMessage, Attachment, Message } from '@/types/message';
 import { randomUUID } from 'crypto';
-import { PrimitiveAtom, atom } from 'jotai';
+import { atom } from 'jotai';
 
 /**
  * List of messages for the current session

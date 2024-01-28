@@ -1,8 +1,10 @@
+import type { ReactNode } from 'react';
+
 import { selectedModelIdAtom } from '@/app/stores/model';
 import { Group, Menu, Stack, Text } from '@mantine/core';
 import { IconCircle, IconCircleCheckFilled } from '@tabler/icons-react';
 import { useAtom } from 'jotai';
-import { ReactNode, memo } from 'react';
+import { memo } from 'react';
 
 import classes from './Model.module.css';
 

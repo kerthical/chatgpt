@@ -31,7 +31,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
             'rgb(26,26,33)',
           ],
         },
-        activeClassName: classes['activated'],
+        activeClassName: classes['activate'],
         defaultRadius: 'md',
       }}
     >

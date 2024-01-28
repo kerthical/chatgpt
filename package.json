@@ -85,7 +85,14 @@
           "unused-imports/no-unused-imports": "warn",
           "perfectionist/sort-interfaces": "off",
           "perfectionist/sort-objects": "off",
-          "perfectionist/sort-object-types": "off"
+          "perfectionist/sort-object-types": "off",
+          "@typescript-eslint/consistent-type-imports": [
+            "error",
+            {
+              "prefer": "type-imports",
+              "disallowTypeAnnotations": false
+            }
+          ]
         }
       }
     ]

@@ -1,4 +1,4 @@
-import Index from '@/app/pages/index';
+import App from '@/app/pages/app';
 import Login from '@/app/pages/login';
 import { apikeyAtom } from '@/app/stores/apikey';
 import { useAtomValue } from 'jotai';
@@ -19,6 +19,6 @@ export default function Router() {
   if (!apiKey) {
     return <Login />;
   } else {
-    return <Index />;
+    return <App />;
   }
 }

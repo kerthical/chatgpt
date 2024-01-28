@@ -1,4 +1,5 @@
-import { locales } from '@/locales';
+import type { locales } from '@/locales';
+
 import { atomWithStorage } from 'jotai/utils';
 
 /**

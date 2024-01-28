@@ -1,4 +1,4 @@
-import { FlexForm } from '@/app/components/FlexForm';
+import { FlexForm } from '@/app/components';
 import { useTranslator } from '@/app/hooks/useTranslator';
 import { apikeyAtom } from '@/app/stores/apikey';
 import { Button, Center, Group, PasswordInput, Stack, Title } from '@mantine/core';
