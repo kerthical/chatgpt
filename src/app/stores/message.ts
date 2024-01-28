@@ -1,4 +1,4 @@
-import { clientAtom } from '@/stores/client';
+import { clientAtom } from '@/app/stores/client';
 import { AssistantMessage, Attachment, Message } from '@/types/message';
 import { randomUUID } from 'crypto';
 import { PrimitiveAtom, atom } from 'jotai';

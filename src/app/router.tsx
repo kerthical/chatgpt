@@ -1,9 +1,12 @@
 import Index from '@/app/pages/index';
 import Login from '@/app/pages/login';
-import { apikeyAtom } from '@/stores/apikey';
+import { apikeyAtom } from '@/app/stores/apikey';
 import { useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 
+/**
+ * Pseudo-router that returns the appropriate page according to the current state (no actual routing)
+ */
 export default function Router() {
   const apiKey = useAtomValue(apikeyAtom);
   const [hasMounted, setHasMounted] = useState(false);

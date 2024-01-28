@@ -1,5 +1,5 @@
-import { AppShell } from '@mantine/core';
+import { App } from '@/app/components/App';
 
 export default function Index() {
-  return <AppShell></AppShell>;
+  return <App />;
 }

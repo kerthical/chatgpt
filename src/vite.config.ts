@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react';
 import jotaiDebugLabel from 'jotai/babel/plugin-debug-label';
 import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh';
-import path from 'node:path';
+import path from 'path';
 import { defineConfig, splitVendorChunkPlugin } from 'vite';
 
 export default defineConfig({

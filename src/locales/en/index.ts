@@ -1,6 +1,7 @@
-import login from '@/locales/en/login';
+import { header } from '@/locales/en/header';
+import { login } from '@/locales/en/login';
 
-const en = {
+export const en = {
   login,
+  header,
 };
-export default en;

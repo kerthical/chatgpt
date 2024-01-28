@@ -1,10 +1,10 @@
 .model-button-closed {
   padding: 8px 12px;
   border-radius: 12px;
-}
 
-.model-button-closed:hover {
-  background: rgb(0 0 0 / 10%);
+  &:hover {
+    background: rgb(0 0 0 / 10%);
+  }
 }
 
 .model-button-opened {
@@ -16,5 +16,5 @@
 .model-selector {
   border-color: rgb(64 65 80);
   border-radius: 12px;
-  background: #202123;
+  background: rgb(32 33 35);
 }

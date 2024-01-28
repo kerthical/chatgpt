@@ -1,6 +1,6 @@
-import { FlexForm } from '@/components/FlexForm';
-import { useTranslator } from '@/hooks/useTranslator';
-import { apikeyAtom } from '@/stores/apikey';
+import { FlexForm } from '@/app/components/FlexForm';
+import { useTranslator } from '@/app/hooks/useTranslator';
+import { apikeyAtom } from '@/app/stores/apikey';
 import { Button, Center, Group, PasswordInput, Stack, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useSetAtom } from 'jotai/index';
@@ -21,14 +21,18 @@ export default function Login() {
     validateInputOnChange: true,
   });
 
+  const BG_COLOR = 'rgb(0, 0, 46)';
+  const LOGO_TEXT_COLOR = 'rgb(210, 146, 255)';
+  const LOGIN_BUTTON_COLOR = 'rgb(60,70,255)';
+
   return (
     <Group gap={0} h="100dvh" mah="100dvh" maw="100dvw" w="100dvw" wrap="nowrap">
-      <Stack bg="#00002e" h="100%" px="xl" py="lg" visibleFrom="sm" w="60%">
-        <Title c="#d292ff" fw={700} order={3}>
+      <Stack bg={BG_COLOR} h="100%" px="xl" py="lg" visibleFrom="sm" w="60%">
+        <Title c={LOGO_TEXT_COLOR} fw={700} order={3}>
           ChatGPT●
         </Title>
         <Center flex={1}>
-          <Title c="#d292ff" fw={400} order={1}>
+          <Title c={LOGO_TEXT_COLOR} fw={400} order={1}>
             <b>Write a text</b>
             <br />
             that goes with a kitten gif for a friend having a rough day
@@ -36,7 +40,7 @@ export default function Login() {
         </Center>
       </Stack>
       <Stack align="center" bg="black" flex={1} h="100%" justify="center" p="xl">
-        <Title c="#ffffff" order={1}>
+        <Title c="white" order={1}>
           {translate('login')}
         </Title>
         <FlexForm
@@ -72,7 +76,7 @@ export default function Login() {
             {...form.getInputProps('apikey')}
           />
           <Button
-            bg="#3c46ff"
+            bg={LOGIN_BUTTON_COLOR}
             disabled={!form.isValid()}
             fullWidth
             loading={loading}

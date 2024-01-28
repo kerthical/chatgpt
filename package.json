@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite dev -c src/vite.config.ts",
     "build": "vite build -c src/vite.config.ts",
-    "lint": "pnpm lint:eslint && pnpm lint:stylelint && pnpm lint:prettier",
+    "lint": "pnpm lint:eslint && pnpm lint:tsc && pnpm lint:stylelint && pnpm lint:prettier",
+    "lint:tsc": "tsc --noEmit",
     "lint:eslint": "eslint --fix --ignore-path .gitignore **/*.{js,jsx,ts,tsx}",
     "lint:stylelint": "stylelint --fix --aei --ignore-path .gitignore **/*.{css,scss,sass}",
     "lint:prettier": "prettier -wu --ignore-path .gitignore ."
