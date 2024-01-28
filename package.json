@@ -5,11 +5,10 @@
   "scripts": {
     "dev": "vite dev -c src/vite.config.ts",
     "build": "vite build -c src/vite.config.ts",
-    "lint": "run-p lint:*",
+    "lint": "pnpm lint:eslint && pnpm lint:stylelint && pnpm lint:prettier",
     "lint:eslint": "eslint --fix --ignore-path .gitignore **/*.{js,jsx,ts,tsx}",
     "lint:stylelint": "stylelint --fix --aei --ignore-path .gitignore **/*.{css,scss,sass}",
-    "lint:prettier": "prettier -wu --ignore-path .gitignore .",
-    "prepare": "husky"
+    "lint:prettier": "prettier -wu --ignore-path .gitignore ."
   },
   "dependencies": {
     "@mantine/core": "^7.5.0",
@@ -36,9 +35,6 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-unused-imports": "^3.0.0",
-    "husky": "^9.0.6",
-    "lint-staged": "^15.2.0",
-    "npm-run-all": "^4.1.5",
     "prettier": "^3.2.4",
     "stylelint": "^16.2.0",
     "stylelint-config-idiomatic-order": "^10.0.0",
@@ -54,9 +50,6 @@
   },
   "eslintConfig": {
     "root": true,
-    "env": {
-      "commonjs": true
-    },
     "extends": [
       "eslint:recommended",
       "prettier"
@@ -82,6 +75,11 @@
         "parserOptions": {
           "project": "tsconfig.json"
         },
+        "settings": {
+          "react": {
+            "version": "detect"
+          }
+        },
         "rules": {
           "unused-imports/no-unused-imports": "warn",
           "perfectionist/sort-interfaces": "off",
@@ -101,10 +99,5 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "eslint --fix",
-    "*.{css,scss,sass}": "stylelint --fix",
-    "*": "prettier --write --ignore-unknown"
   }
 }

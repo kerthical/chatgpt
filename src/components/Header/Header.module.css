@@ -1,20 +1,20 @@
 .model-button-closed {
-    padding: 8px 12px;
-    border-radius: 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
 }
 
 .model-button-closed:hover {
-    background: rgb(0 0 0 / 10%)
+  background: rgb(0 0 0 / 10%);
 }
 
 .model-button-opened {
-    padding: 8px 12px;
-    border-radius: 12px;
-    background: rgb(0 0 0 / 20%)
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgb(0 0 0 / 20%);
 }
 
 .model-selector {
-    border-color: rgb(64 65 80);
-    border-radius: 12px;
-    background: #202123;
+  border-color: rgb(64 65 80);
+  border-radius: 12px;
+  background: #202123;
 }
