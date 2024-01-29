@@ -1,12 +1,11 @@
 import type { ModelProps } from '@/app/components';
 
 import { Model } from '@/app/components';
-import { useResponsive } from '@/app/hooks/useResponsive';
-import { useTranslator } from '@/app/hooks/useTranslator';
-import { selectedModelIdAtom } from '@/app/stores/model';
+import { useResponsive, useTranslator } from '@/app/hooks';
+import { selectedModelIdAtom } from '@/app/stores';
 import { Group, Menu, Text } from '@mantine/core';
 import { IconBolt, IconChevronDown, IconSparkles } from '@tabler/icons-react';
-import { useAtomValue } from 'jotai/index';
+import { useAtomValue } from 'jotai';
 import { memo, useState } from 'react';
 
 import classes from './ModelSelector.module.css';

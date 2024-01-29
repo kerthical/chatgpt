@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { selectedModelIdAtom } from '@/app/stores/model';
+import { selectedModelIdAtom } from '@/app/stores';
 import { Group, Menu, Stack, Text } from '@mantine/core';
 import { IconCircle, IconCircleCheckFilled } from '@tabler/icons-react';
 import { useAtom } from 'jotai';

@@ -1,8 +1,7 @@
-import type { AssistantMessage, Attachment, Message } from '@/types/message';
+import type { AssistantMessage, Attachment, Message } from '@/types';
 import type { PrimitiveAtom } from 'jotai';
 
-import { clientAtom } from '@/app/stores/client';
-import { randomUUID } from 'crypto';
+import { clientAtom } from '@/app/stores';
 import { atom } from 'jotai';
 
 /**
@@ -29,7 +28,7 @@ export const sendMessageAtom = atom(null, async (get, set, content: string, atta
     ...prev,
     atom<Message>({
       role: 'user',
-      uuid: randomUUID(),
+      uuid: crypto.randomUUID(),
       content,
       attachments,
     }),
@@ -45,7 +44,7 @@ export const sendMessageAtom = atom(null, async (get, set, content: string, atta
 
   const generatedMessageAtom = atom<AssistantMessage>({
     role: 'assistant',
-    uuid: randomUUID(),
+    uuid: crypto.randomUUID(),
     content: '',
     toolCall: null,
   });
@@ -69,7 +68,7 @@ export const sendMessageAtom = atom(null, async (get, set, content: string, atta
         set(generatedMessageAtom, prev => ({
           ...prev,
           toolCall: {
-            uuid: randomUUID(),
+            uuid: crypto.randomUUID(),
             name: toolCall.function?.name ?? '',
             arguments: toolCall.function?.arguments ?? '',
             output: null,
@@ -80,7 +79,7 @@ export const sendMessageAtom = atom(null, async (get, set, content: string, atta
           ...prev,
           toolCall: {
             ...prev.toolCall!,
-            arguments: prev.toolCall!.arguments + toolCall.function?.arguments ?? '',
+            arguments: prev.toolCall!.arguments + (toolCall.function?.arguments ?? ''),
           },
         }));
       }

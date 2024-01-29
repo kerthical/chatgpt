@@ -1,4 +1,4 @@
-import { Header, Navbar } from '@/app/components';
+import { Header, Main, Navbar } from '@/app/components';
 import { isNavbarOpenAtom } from '@/app/stores/navbar';
 import { AppShell } from '@mantine/core';
 import { useAtomValue } from 'jotai';
@@ -20,6 +20,7 @@ export default function App() {
     >
       <Header />
       <Navbar />
+      <Main />
     </AppShell>
   );
 }
