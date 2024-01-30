@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { selectedModelIdAtom } from '@/app/stores';
+import { selectedModelIdAtom } from '@/stores/model';
 import { Group, Menu, Stack, Text } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
 import { IconCircle, IconCircleCheckFilled } from '@tabler/icons-react';

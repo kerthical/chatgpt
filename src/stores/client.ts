@@ -1,4 +1,4 @@
-import { apikeyAtom } from '@/app/stores';
+import { apikeyAtom } from '@/stores/apikey.ts';
 import { atom } from 'jotai';
 import OpenAI from 'openai';
 

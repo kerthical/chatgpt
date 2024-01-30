@@ -1,5 +1,5 @@
-import { useTranslator } from '@/app/hooks';
-import { isNavbarOpenAtom } from '@/app/stores';
+import { useTranslator } from '@/hooks/useTranslator';
+import { isNavbarOpenAtom } from '@/stores/navbar';
 import { Box, Tooltip } from '@mantine/core';
 import { useAtom } from 'jotai/index';
 import { memo } from 'react';
@@ -31,3 +31,5 @@ export const SidebarChevron = memo(() => {
     </Tooltip>
   );
 });
+
+SidebarChevron.displayName = 'SidebarChevron';

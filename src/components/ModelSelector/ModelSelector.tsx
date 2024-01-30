@@ -1,8 +1,9 @@
-import type { ModelProps } from '@/app/components';
+import type { ModelProps } from '@/components/Model';
 
-import { Model } from '@/app/components';
-import { useResponsive, useTranslator } from '@/app/hooks';
-import { selectedModelIdAtom } from '@/app/stores';
+import { Model } from '@/components/Model';
+import { useResponsive } from '@/hooks/useResponsive.ts';
+import { useTranslator } from '@/hooks/useTranslator.ts';
+import { selectedModelIdAtom } from '@/stores/model';
 import { Group, Menu, Text } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
 import { IconBolt, IconChevronDown, IconSparkles } from '@tabler/icons-react';

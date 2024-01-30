@@ -1,7 +1,7 @@
-import type { AssistantMessage, Attachment, Message } from '@/types';
+import type { AssistantMessage, Attachment, Message } from '@/types/message.ts';
 import type { PrimitiveAtom } from 'jotai';
 
-import { clientAtom } from '@/app/stores';
+import { clientAtom } from '@/stores/client.ts';
 import { atom } from 'jotai';
 import { focusAtom } from 'jotai-optics';
 

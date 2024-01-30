@@ -49,15 +49,13 @@ frameworks or libraries are changed.
 ```
 .
 ├── src                 # All "source" code is here
-│   ├── app             # Framework specific code (Vite, React)
-│   │   ├── pages       # Renderable pages
-│   │   ├── components  # Reusable components
-│   │   ├── hooks       # Custom hooks
-│   │   ├── stores      # Global stores (using jotai)
-│   │   ├── entry.tsx   # Entrypoint (Render function)
-│   │   └── router.tsx  # Virtualized router
+│   ├── app             # Framework specific code (Vite)
 │   ├── assets          # Static assets (favicons, robots.txt, etc.)
+│   ├── components      # Components
+│   ├── hooks           # Custom hooks
 │   ├── locales         # Localization files and translator utils
+│   ├── stores          # Global stores (Jotai)
+│   ├── styles          # Global styles (CSS)
 │   ├── types           # Global types
 │   ├── index.html      # EntryPoint
 │   └── vite.config.ts  # Vite config

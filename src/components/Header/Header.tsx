@@ -1,5 +1,5 @@
-import { ModelSelector } from '@/app/components';
-import { isNavbarOpenAtom } from '@/app/stores';
+import { ModelSelector } from '@/components/ModelSelector';
+import { isNavbarOpenAtom } from '@/stores/navbar';
 import { ActionIcon, AppShellHeader, Group } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
 import { IconEdit, IconMenu } from '@tabler/icons-react';

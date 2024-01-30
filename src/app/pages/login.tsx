@@ -1,6 +1,6 @@
-import { FlexForm } from '@/app/components';
-import { useTranslator } from '@/app/hooks/useTranslator';
-import { apikeyAtom } from '@/app/stores/apikey';
+import { FlexForm } from '@/components/FlexForm';
+import { useTranslator } from '@/hooks/useTranslator.ts';
+import { apikeyAtom } from '@/stores/apikey.ts';
 import { Button, Center, Group, PasswordInput, Stack, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useSetAtom } from 'jotai/index';

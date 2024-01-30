@@ -1,5 +1,7 @@
-import { localeAtom } from '@/app/stores/locale';
-import { translate } from '@/locales/translate';
+import type { MessageKeys, NamespaceKeys } from '@/locales';
+
+import { translateUnsafe } from '@/locales/translate.ts';
+import { localeAtom } from '@/stores/locale';
 import { useAtomValue } from 'jotai';
 
 /**
@@ -8,8 +10,8 @@ import { useAtomValue } from 'jotai';
  * @param namespace Namespace to translate
  * @returns A function that can be translated when a key is entered, according to the current locale
  */
-export function useTranslator(namespace: string) {
+export function useTranslator<NK extends NamespaceKeys<'en'>, MK extends MessageKeys<'en', NK>>(namespace: NK) {
   const locale = useAtomValue(localeAtom);
 
-  return (key: string) => translate(locale, namespace, key);
+  return (key: MK): string => translateUnsafe(locale, namespace, key);
 }

@@ -1,6 +1,6 @@
-import App from '@/app/pages/app';
-import Login from '@/app/pages/login';
-import { apikeyAtom } from '@/app/stores/apikey';
+import App from '@/app/pages/app.tsx';
+import Login from '@/app/pages/login.tsx';
+import { apikeyAtom } from '@/stores/apikey';
 import { useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 

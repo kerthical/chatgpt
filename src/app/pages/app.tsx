@@ -1,5 +1,7 @@
-import { Header, Main, Navbar } from '@/app/components';
-import { isNavbarOpenAtom } from '@/app/stores/navbar';
+import { Header } from '@/components/Header';
+import { Main } from '@/components/Main';
+import { Navbar } from '@/components/Navbar';
+import { isNavbarOpenAtom } from '@/stores/navbar.ts';
 import { AppShell } from '@mantine/core';
 import { useAtomValue } from 'jotai';
 

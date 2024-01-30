@@ -1,5 +1,5 @@
-import { useResponsive } from '@/app/hooks';
-import { isNavbarOpenAtom } from '@/app/stores';
+import { useResponsive } from '@/hooks/useResponsive';
+import { isNavbarOpenAtom } from '@/stores/navbar';
 import { AppShellNavbar, Button, Center, Group, Stack } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
 import { IconBrandOpenai, IconEdit } from '@tabler/icons-react';

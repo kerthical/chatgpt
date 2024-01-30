@@ -1,6 +1,6 @@
-import { FlexForm } from '@/app/components';
-import { SidebarChevron } from '@/app/components';
-import { useTranslator } from '@/app/hooks';
+import { FlexForm } from '@/components/FlexForm';
+import { SidebarChevron } from '@/components/SidebarChevron';
+import { useTranslator } from '@/hooks/useTranslator';
 import { AppShellMain, Center, Stack, Text, Textarea, Title } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
 import { IconBrandOpenai } from '@tabler/icons-react';

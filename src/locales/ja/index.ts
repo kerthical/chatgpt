@@ -6,4 +6,4 @@ export const ja = {
   login,
   header,
   main,
-};
+} as const;

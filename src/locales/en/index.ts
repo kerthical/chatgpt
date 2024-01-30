@@ -6,4 +6,4 @@ export const en = {
   login,
   header,
   main,
-};
+} as const;
