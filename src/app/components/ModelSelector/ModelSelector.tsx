@@ -33,7 +33,18 @@ export const ModelSelector = memo(() => {
   const selectedModel = models.find(model => model.id === selectedModelId);
 
   return (
-    <Menu onChange={setModelSelectorOpen} opened={isModelSelectorOpen} position={isMobile ? 'bottom' : 'bottom-start'}>
+    <Menu
+      onChange={setModelSelectorOpen}
+      opened={isModelSelectorOpen}
+      position={isMobile ? 'bottom' : 'bottom-start'}
+      styles={{
+        dropdown: {
+          backgroundColor: 'rgb(32, 33, 35)',
+          borderColor: 'rgb(64, 65, 79)',
+        },
+      }}
+      width={360}
+    >
       <Menu.Target>
         <Group
           className={isModelSelectorOpen ? classes['model-button-opened'] : classes['model-button-closed']}

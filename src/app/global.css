@@ -1,3 +1,99 @@
+@font-face {
+  font-display: swap;
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100;
+  src: url("/jetbrainsmono.ttf") format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 100;
+  src: url("/jetbrainsmono.ttf") format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url("/jetbrainsmono.ttf") format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 400;
+  src: url("/jetbrainsmono.ttf") format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  src: url("/jetbrainsmono.ttf") format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 700;
+  src: url("/jetbrainsmono.ttf") format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'M PLUS 2';
+  font-style: normal;
+  font-weight: 100;
+  src: url("/mplus2.ttf") format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'M PLUS 2';
+  font-style: italic;
+  font-weight: 100;
+  src: url("/mplus2.ttf") format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'M PLUS 2';
+  font-style: normal;
+  font-weight: 400;
+  src: url("/mplus2.ttf") format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'M PLUS 2';
+  font-style: italic;
+  font-weight: 400;
+  src: url("/mplus2.ttf") format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'M PLUS 2';
+  font-style: normal;
+  font-weight: 700;
+  src: url("/mplus2.ttf") format('truetype');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'M PLUS 2';
+  font-style: italic;
+  font-weight: 700;
+  src: url("/mplus2.ttf") format('truetype');
+}
+
 *,
 ::after,
 ::before {
@@ -12,8 +108,7 @@
 
 :host,
 html {
-  font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    'Noto Color Emoji';
+  font-family: 'M PLUS 2', sans-serif;
   font-feature-settings: normal;
   font-variation-settings: normal;
   line-height: 1.5;
@@ -61,7 +156,7 @@ code,
 kbd,
 pre,
 samp {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-feature-settings: normal;
   font-size: 1em;
   font-variation-settings: normal;

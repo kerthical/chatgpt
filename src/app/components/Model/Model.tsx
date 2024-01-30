@@ -36,7 +36,7 @@ export const Model = memo((props: ModelProps) => {
   return (
     <Menu.Item className={classes['item']} onClick={() => setSelectedModelId(props.id)}>
       <Group justify="space-between" wrap="nowrap">
-        <Group>
+        <Group wrap="nowrap">
           {props.icon}
           <Stack gap={0}>
             <Text c="white" size="sm">

@@ -17,6 +17,15 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <MantineProvider
       defaultColorScheme="auto"
       theme={{
+        fontFamily: "'M PLUS 2', sans-serif",
+        fontFamilyMonospace: "'JetBrains Mono', monospace",
+        fontSizes: {
+          xs: '0.6rem',
+          sm: '0.75rem',
+          md: '0.9rem',
+          lg: '1rem',
+          xl: '1.1rem',
+        },
         colors: {
           dark: [
             'rgb(188,189,201)',

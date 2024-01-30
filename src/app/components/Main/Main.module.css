@@ -13,8 +13,8 @@
 
 .sidebar-chevron-upper-opened {
     width: 4px;
-    height: 12px;
-    background-color: gray;
+    height: 10px;
+    background-color: rgb(128 128 128);
     border-top-left-radius: 0.125rem;
     border-top-right-radius: 0.125rem;
     transform: rotate(0);
@@ -22,14 +22,14 @@
 }
 
 .sidebar-chevron-container:hover .sidebar-chevron-upper-opened {
-    background: white;
-    transform: translateY(0.05rem) rotate(15deg);
+    background: rgb(255 255 255);
+    transform: translateY(0.03rem) rotate(15deg);
 }
 
 .sidebar-chevron-lower-opened {
     width: 4px;
-    height: 12px;
-    background-color: gray;
+    height: 10px;
+    background-color: rgb(128 128 128);
     border-bottom-left-radius: 0.125rem;
     border-bottom-right-radius: 0.125rem;
     transform: rotate(0);
@@ -37,34 +37,34 @@
 }
 
 .sidebar-chevron-container:hover .sidebar-chevron-lower-opened {
-    background: white;
-    transform: translateY(-0.05rem) rotate(-15deg);
+    background: rgb(255 255 255);
+    transform: translateY(-0.03rem) rotate(-15deg);
 }
 
 .sidebar-chevron-upper-closed {
     width: 4px;
-    height: 12px;
-    background-color: gray;
+    height: 10px;
+    background-color: rgb(128 128 128);
     border-top-left-radius: 0.125rem;
     border-top-right-radius: 0.125rem;
-    transform: translateY(0.05rem) rotate(-15deg);
+    transform: translateY(0.03rem) rotate(-15deg);
     transition: all .3s ease;
 }
 
 .sidebar-chevron-container:hover .sidebar-chevron-upper-closed {
-    background: white;
+    background: rgb(255 255 255);
 }
 
 .sidebar-chevron-lower-closed {
     width: 4px;
-    height: 12px;
-    background-color: gray;
+    height: 10px;
+    background-color: rgb(128 128 128);
     border-bottom-left-radius: 0.125rem;
     border-bottom-right-radius: 0.125rem;
-    transform: translateY(-0.05rem) rotate(15deg);
+    transform: translateY(-0.03rem) rotate(15deg);
     transition: all .3s ease;
 }
 
 .sidebar-chevron-container:hover .sidebar-chevron-lower-closed {
-    background: white;
+    background: rgb(255 255 255);
 }

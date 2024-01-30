@@ -10,28 +10,28 @@ export const Header = memo(() => {
 
   return (
     <AppShellHeader>
-      <Group h="100%" justify="space-between" p={8} w="100%">
+      <Group h="100%" justify="space-between" p={0} px={8} w="100%">
         {/* TODO: newHistory */}
         <ActionIcon
           c="white"
           hiddenFrom="sm"
           onClick={() => setNavbarOpen(prev => !prev)}
-          size="sm"
+          size="xs"
           variant="transparent"
         >
-          <IconMenu />
+          <IconMenu size="100%" />
         </ActionIcon>
         <Group gap="xs">
           {!isNavbarOpen && (
             <ActionIcon c="white" p={6} size="lg" variant="default" visibleFrom="sm">
-              <IconEdit />
+              <IconEdit size="100%" />
             </ActionIcon>
           )}
           <ModelSelector />
         </Group>
         {/* TODO: newHistory */}
-        <ActionIcon c="white" hiddenFrom="sm" size="sm" variant="transparent">
-          <IconEdit />
+        <ActionIcon c="white" hiddenFrom="sm" size="xs" variant="transparent">
+          <IconEdit size="100%" />
         </ActionIcon>
       </Group>
     </AppShellHeader>

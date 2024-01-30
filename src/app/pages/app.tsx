@@ -8,7 +8,12 @@ export default function App() {
 
   return (
     <AppShell
-      header={{ height: 60 }}
+      header={{
+        height: {
+          base: 44,
+          sm: 60,
+        },
+      }}
       layout="alt"
       navbar={{
         width: { base: 320, sm: 260 },
