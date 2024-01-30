@@ -2,11 +2,12 @@ import type { ReactNode } from 'react';
 
 import { selectedModelIdAtom } from '@/app/stores';
 import { Group, Menu, Stack, Text } from '@mantine/core';
+import { useColorScheme } from '@mantine/hooks';
 import { IconCircle, IconCircleCheckFilled } from '@tabler/icons-react';
 import { useAtom } from 'jotai';
 import { memo } from 'react';
 
-import classes from './Model.module.css';
+import * as classes from './Model.css.ts';
 
 export interface ModelProps {
   /**
@@ -31,15 +32,16 @@ export interface ModelProps {
 }
 
 export const Model = memo((props: ModelProps) => {
+  const colorScheme = useColorScheme();
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
 
   return (
-    <Menu.Item className={classes['item']} onClick={() => setSelectedModelId(props.id)}>
+    <Menu.Item className={classes.item} onClick={() => setSelectedModelId(props.id)}>
       <Group justify="space-between" wrap="nowrap">
         <Group wrap="nowrap">
           {props.icon}
           <Stack gap={0}>
-            <Text c="white" size="sm">
+            <Text c={colorScheme === 'dark' ? 'white' : 'black'} size="sm">
               GPT-{props.generation}
             </Text>
             <Text c="gray.6" size="sm">

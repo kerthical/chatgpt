@@ -4,29 +4,31 @@ import { Model } from '@/app/components';
 import { useResponsive, useTranslator } from '@/app/hooks';
 import { selectedModelIdAtom } from '@/app/stores';
 import { Group, Menu, Text } from '@mantine/core';
+import { useColorScheme } from '@mantine/hooks';
 import { IconBolt, IconChevronDown, IconSparkles } from '@tabler/icons-react';
 import { useAtomValue } from 'jotai';
 import { memo, useState } from 'react';
 
-import classes from './ModelSelector.module.css';
+import * as classes from './ModelSelector.css.ts';
 
 export const ModelSelector = memo(() => {
   const { isMobile } = useResponsive();
   const [isModelSelectorOpen, setModelSelectorOpen] = useState(false);
   const selectedModelId = useAtomValue(selectedModelIdAtom);
   const translate = useTranslator('header');
+  const colorScheme = useColorScheme();
   const models: ModelProps[] = [
     {
       id: 'gpt-3.5-turbo-1106',
       generation: '3.5',
       description: translate('model.gpt-3.5'),
-      icon: <IconBolt color="white" size={18} stroke={2} />,
+      icon: <IconBolt color={colorScheme === 'dark' ? 'white' : 'black'} size={18} stroke={2} />,
     },
     {
       id: 'gpt-4-turbo-preview',
       generation: '4',
       description: translate('model.gpt-4'),
-      icon: <IconSparkles color="white" size={18} stroke={2} />,
+      icon: <IconSparkles color={colorScheme === 'dark' ? 'white' : 'black'} size={18} stroke={2} />,
     },
   ];
 
@@ -39,28 +41,28 @@ export const ModelSelector = memo(() => {
       position={isMobile ? 'bottom' : 'bottom-start'}
       styles={{
         dropdown: {
-          backgroundColor: 'rgb(32, 33, 35)',
-          borderColor: 'rgb(64, 65, 79)',
+          backgroundColor: colorScheme === 'dark' ? 'rgb(32, 33, 35)' : 'white',
+          borderColor: colorScheme === 'dark' ? 'rgb(64, 65, 79)' : 'rgb(236, 236, 241)',
         },
       }}
       width={360}
     >
       <Menu.Target>
         <Group
-          className={isModelSelectorOpen ? classes['model-button-opened'] : classes['model-button-closed']}
+          className={isModelSelectorOpen ? classes.modelButtonOpened : classes.modelButtonClosed}
           component="button"
           gap={2}
         >
-          <Text c="white" fw={700} size="lg">
+          <Text c={colorScheme === 'dark' ? 'white' : 'black'} fw={700} size="lg">
             ChatGPT{` `}
-            <Text c="gray" fw={700} span>
+            <Text c={colorScheme === 'dark' ? 'gray' : 'gray.7'} fw={700} span>
               {selectedModel?.generation}
             </Text>
           </Text>
           <IconChevronDown color="gray" size={16} stroke={3} />
         </Group>
       </Menu.Target>
-      <Menu.Dropdown className={classes['model-selector']}>
+      <Menu.Dropdown className={classes.modelSelector}>
         {models.map(model => (
           <Model key={model.id} {...model} />
         ))}

@@ -9,6 +9,7 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
@@ -20,8 +21,10 @@
     "noUnusedParameters": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-    },
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
   "exclude": ["node_modules"],
   "include": ["**/*.ts", "**/*.tsx"],

@@ -1,7 +1,0 @@
-.new-chat-button {
-    position: sticky;
-
-    &:hover {
-        background: rgb(255 255 255 / 10%);
-    }
-}

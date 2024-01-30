@@ -6,7 +6,7 @@ import { IconBrandOpenai, IconEdit } from '@tabler/icons-react';
 import { useSetAtom } from 'jotai/index';
 import { memo } from 'react';
 
-import classes from './Navbar.module.css';
+import * as classes from './Navbar.css.ts';
 
 export const Navbar = memo(() => {
   const { isMobile } = useResponsive();
@@ -31,7 +31,7 @@ export const Navbar = memo(() => {
             {/* TODO: newHistory */}
             <Button
               c="white"
-              className={classes['new-chat-button']}
+              className={classes.newChatButton}
               h={40}
               justify="space-between"
               px="xs"

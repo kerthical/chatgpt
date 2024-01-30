@@ -3,6 +3,7 @@ import type { PrimitiveAtom } from 'jotai';
 
 import { clientAtom } from '@/app/stores';
 import { atom } from 'jotai';
+import { focusAtom } from 'jotai-optics';
 
 /**
  * List of messages for the current session
@@ -48,6 +49,8 @@ export const sendMessageAtom = atom(null, async (get, set, content: string, atta
     content: '',
     toolCall: null,
   });
+  const generatedContentAtom = focusAtom(generatedMessageAtom, optic => optic.prop('content'));
+  const generatedToolCallAtom = focusAtom(generatedMessageAtom, optic => optic.prop('toolCall'));
 
   set(messagesAtom, prev => [...prev, generatedMessageAtom as PrimitiveAtom<Message>]);
   for await (const chunk of completion) {
@@ -56,31 +59,24 @@ export const sendMessageAtom = atom(null, async (get, set, content: string, atta
 
     const content = delta?.content;
     if (content) {
-      set(generatedMessageAtom, prev => ({
-        ...prev,
-        content: prev.content + content,
-      }));
+      set(generatedContentAtom, prev => prev + content);
     }
 
     const toolCall = delta?.tool_calls?.[0];
     if (toolCall) {
-      if (get(generatedMessageAtom).toolCall === null) {
-        set(generatedMessageAtom, prev => ({
-          ...prev,
-          toolCall: {
-            uuid: crypto.randomUUID(),
-            name: toolCall.function?.name ?? '',
-            arguments: toolCall.function?.arguments ?? '',
-            output: null,
-          },
-        }));
+      if (get(generatedToolCallAtom)) {
+        set(generatedToolCallAtom, {
+          uuid: crypto.randomUUID(),
+          name: toolCall.function?.name ?? '',
+          arguments: toolCall.function?.arguments ?? '',
+          output: null,
+        });
       } else {
-        set(generatedMessageAtom, prev => ({
-          ...prev,
-          toolCall: {
-            ...prev.toolCall!,
-            arguments: prev.toolCall!.arguments + (toolCall.function?.arguments ?? ''),
-          },
+        set(generatedToolCallAtom, prev => ({
+          uuid: crypto.randomUUID(),
+          name: prev?.name ?? '',
+          arguments: (prev?.arguments ?? '') + (toolCall.function?.arguments ?? ''),
+          output: null,
         }));
       }
     }
