@@ -31,12 +31,20 @@ export interface ModelProps {
   icon: ReactNode;
 }
 
-export const Model = memo((props: ModelProps) => {
+export const Model = memo<ModelProps>(props => {
   const colorScheme = useColorScheme();
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
 
   return (
-    <Menu.Item className={classes.item} onClick={() => setSelectedModelId(props.id)}>
+    <Menu.Item
+      className={classes.item}
+      onClick={() => setSelectedModelId(props.id)}
+      styles={{
+        item: {
+          borderRadius: 6,
+        },
+      }}
+    >
       <Group justify="space-between" wrap="nowrap">
         <Group wrap="nowrap">
           {props.icon}
@@ -45,7 +53,7 @@ export const Model = memo((props: ModelProps) => {
               GPT-{props.generation}
             </Text>
             <Text c="gray.6" size="sm">
-              GPT-{props.description}
+              {props.description}
             </Text>
           </Stack>
         </Group>
