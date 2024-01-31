@@ -1,19 +1,21 @@
 import { ModelSelector } from '@/components/ModelSelector';
+import { newConversationAtom } from '@/stores/conversation.ts';
 import { isNavbarOpenAtom } from '@/stores/navbar';
 import { ActionIcon, AppShellHeader, Group } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
 import { IconEdit, IconMenu } from '@tabler/icons-react';
 import { useAtom } from 'jotai';
+import { useSetAtom } from 'jotai/index';
 import { memo } from 'react';
 
 export const Header = memo(() => {
   const [isNavbarOpen, setNavbarOpen] = useAtom(isNavbarOpenAtom);
+  const newConversation = useSetAtom(newConversationAtom);
   const colorScheme = useColorScheme();
 
   return (
     <AppShellHeader>
       <Group h="100%" justify="space-between" p={0} px={8} w="100%">
-        {/* TODO: newHistory */}
         <ActionIcon
           c={colorScheme === 'dark' ? 'white' : 'black'}
           hiddenFrom="sm"
@@ -26,7 +28,9 @@ export const Header = memo(() => {
         <Group gap="xs">
           {!isNavbarOpen && (
             <ActionIcon
+              bg="transparent"
               c={colorScheme === 'dark' ? 'white' : 'black'}
+              onClick={() => newConversation()}
               p={6}
               size="lg"
               variant="default"
@@ -37,8 +41,13 @@ export const Header = memo(() => {
           )}
           <ModelSelector />
         </Group>
-        {/* TODO: newHistory */}
-        <ActionIcon c={colorScheme === 'dark' ? 'white' : 'black'} hiddenFrom="sm" size="xs" variant="transparent">
+        <ActionIcon
+          c={colorScheme === 'dark' ? 'white' : 'black'}
+          hiddenFrom="sm"
+          onClick={() => newConversation()}
+          size="xs"
+          variant="transparent"
+        >
           <IconEdit size="100%" />
         </ActionIcon>
       </Group>

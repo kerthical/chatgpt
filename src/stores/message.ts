@@ -41,7 +41,12 @@ export const sendMessageAtom = atom(null, async (get, set, content: string, atta
   const completion = await client.chat.completions.create({
     model: 'gpt-4-turbo-preview',
     stream: true,
-    messages: [],
+    messages: get(messagesAtom)
+      .map(m => get(m))
+      .map(m => ({
+        role: m.role,
+        content: m.content,
+      })),
   });
   set(generatingTaskAtom, completion.controller);
 

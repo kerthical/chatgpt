@@ -49,7 +49,7 @@ export const sidebarChevronUpperOpened = style([
   {
     selectors: {
       [`${sidebarChevronContainer}:hover &`]: {
-        transform: 'translateY(0.03rem) rotate(15deg)',
+        transform: 'translateY(0.05rem) rotate(15deg)',
       },
     },
   },
@@ -59,7 +59,7 @@ export const sidebarChevronLowerOpened = style([
   {
     selectors: {
       [`${sidebarChevronContainer}:hover &`]: {
-        transform: 'translateY(-0.03rem) rotate(-15deg)',
+        transform: 'translateY(-0.05rem) rotate(-15deg)',
       },
     },
   },
@@ -68,12 +68,12 @@ export const sidebarChevronLowerOpened = style([
 export const sidebarChevronUpperClosed = style([
   sidebarChevronUpper,
   {
-    transform: 'translateY(0.03rem) rotate(-15deg)',
+    transform: 'translateY(0.05rem) rotate(-15deg)',
   },
 ]);
 export const sidebarChevronLowerClosed = style([
   sidebarChevronLower,
   {
-    transform: 'translateY(-0.03rem) rotate(15deg)',
+    transform: 'translateY(-0.05rem) rotate(15deg)',
   },
 ]);

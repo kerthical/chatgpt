@@ -31,7 +31,7 @@ export interface ModelProps {
   icon: ReactNode;
 }
 
-export const Model = memo<ModelProps>(props => {
+export const Model = memo<ModelProps>((props: ModelProps) => {
   const colorScheme = useColorScheme();
   const [selectedModelId, setSelectedModelId] = useAtom(selectedModelIdAtom);
 

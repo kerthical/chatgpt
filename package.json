@@ -82,6 +82,7 @@
         },
         "rules": {
           "unused-imports/no-unused-imports": "warn",
+          "react-hooks/exhaustive-deps": "off",
           "perfectionist/sort-interfaces": "off",
           "perfectionist/sort-objects": "off",
           "perfectionist/sort-object-types": "off",

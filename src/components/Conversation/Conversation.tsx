@@ -15,7 +15,7 @@ interface ConversationProps {
   conversation: PrimitiveAtom<ConversationType>;
 }
 
-export const Conversation = memo<ConversationProps>(props => {
+export const Conversation = memo<ConversationProps>((props: ConversationProps) => {
   const [conversation, setConversation] = useAtom(props.conversation);
   const [selectedConversation, setSelectedConversation] = useAtom(selectedConversationIdAtom);
   const deleteConversation = useSetAtom(deleteConversationAtom);

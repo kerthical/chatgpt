@@ -3,14 +3,13 @@ import type { PrimitiveAtom } from 'jotai';
 
 import { messagesAtom } from '@/stores/message.ts';
 import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
 
 /**
  * List of conversations
  */
-export const conversationsAtom = atomWithStorage<PrimitiveAtom<Conversation>[]>('conversations', []);
+export const conversationsAtom = atom<PrimitiveAtom<Conversation>[]>([]);
 export const selectedConversationIdAtom = atom<null | string>(null);
-export const selectedConversationAtom = atom<PrimitiveAtom<Conversation> | null>(get => {
+export const currentConversationAtom = atom<PrimitiveAtom<Conversation> | null>(get => {
   const selectedConversationId = get(selectedConversationIdAtom);
   if (!selectedConversationId) return null;
   const conversations = get(conversationsAtom);

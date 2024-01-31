@@ -6,31 +6,24 @@ import { themeToVars } from '@mantine/vanilla-extract';
 import * as classes from './entry.css.ts';
 
 export const theme: MantineThemeOverride = createTheme({
-  fontFamily: "'M PLUS 2', sans-serif",
-  fontFamilyMonospace: "'JetBrains Mono', monospace",
-  fontSizes: {
-    xs: '0.65rem',
-    sm: '0.75rem',
-    md: '0.85rem',
-    lg: '1rem',
-    xl: '1.15rem',
-  },
-  colors: {
-    dark: [
-      'rgb(188,189,201)',
-      'rgb(165,166,182)',
-      'rgb(135,137,154)',
-      'rgb(121,123,140)',
-      'rgb(101,103,119)',
-      'rgb(83,85,100)',
-      'rgb(63,64,77)',
-      'rgb(52,53,65)',
-      'rgb(41,42,52)',
-      'rgb(26,26,33)',
-    ],
-  },
   activeClassName: classes.activated,
   defaultRadius: 'md',
+  fontFamily: "'Noto Sans JP', sans-serif",
+  fontFamilyMonospace: "'JetBrains Mono', monospace",
+  colors: {
+    dark: [
+      '#bcbdc9',
+      '#a5a6b6',
+      '#87899a',
+      '#797b8c',
+      '#656777',
+      '#535564',
+      '#3f404d',
+      '#343541',
+      '#292a34',
+      '#1a1a21',
+    ],
+  },
 });
 
 export const vars = themeToVars(theme);

@@ -14,8 +14,8 @@ export default defineConfig({
         plugins: [jotaiDebugLabel, jotaiReactRefresh],
       },
     }),
-    splitVendorChunkPlugin(),
     vanillaExtractPlugin(),
+    splitVendorChunkPlugin(),
   ],
   build: {
     outDir: '../dist',

@@ -2,9 +2,9 @@ import { Conversation } from '@/components/Conversation';
 import { useResponsive } from '@/hooks/useResponsive';
 import { conversationsAtom, newConversationAtom } from '@/stores/conversation.ts';
 import { isNavbarOpenAtom } from '@/stores/navbar';
-import { AppShellNavbar, Button, Center, Group, Stack } from '@mantine/core';
+import { ActionIcon, AppShellNavbar, Box, Button, Center, Group, Stack } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
-import { IconBrandOpenai, IconEdit } from '@tabler/icons-react';
+import { IconBrandOpenai, IconEdit, IconX } from '@tabler/icons-react';
 import { useAtomValue } from 'jotai';
 import { useSetAtom } from 'jotai/index';
 import { memo } from 'react';
@@ -21,7 +21,7 @@ export const Navbar = memo(() => {
   return (
     <AppShellNavbar bg="rgba(0, 0, 0, 0.2)">
       <Group align="start" gap={0} h="100%" w="100%">
-        <Stack
+        <Box
           bg="black"
           h="100%"
           px="sm"
@@ -48,14 +48,19 @@ export const Navbar = memo(() => {
                 <Center bg="white" h={28} style={{ borderRadius: 999 }} w={28}>
                   <IconBrandOpenai color="black" height="80%" stroke={1} width="80%" />
                 </Center>
-                New Chat
+                New chat
               </Group>
             </Button>
             {conversations.map((c, i) => (
               <Conversation conversation={c} key={i} />
             ))}
           </Stack>
-        </Stack>
+        </Box>
+        <Box hiddenFrom="sm" p="sm">
+          <ActionIcon c="white" onClick={() => setIsNavbarOpen(prev => !prev)} size="sm" variant="transparent">
+            <IconX />
+          </ActionIcon>
+        </Box>
       </Group>
     </AppShellNavbar>
   );
