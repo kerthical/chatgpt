@@ -16,9 +16,8 @@ export const Main = memo(() => {
 
   return (
     <AppShellMain>
-      <Stack gap="xs" h="calc(100dvh - var(--app-shell-header-height))" left={0} pos="relative" top={0} w="100%">
+      <Stack gap={0} h="calc(100dvh - var(--app-shell-header-height))" left={0} pos="relative" top={0} w="100%">
         <SidebarChevron />
-
         {messages.length === 0 ? (
           <Stack align="center" h="100%" justify="center" w="100%">
             <Center bg="white" h={72} style={{ borderRadius: 999 }} w={72}>
@@ -30,7 +29,7 @@ export const Main = memo(() => {
           </Stack>
         ) : (
           <ScrollArea h="100%" scrollbarSize={6} w="100%">
-            <Stack align="center" gap={0} px="xl" w="100%">
+            <Stack align="center" gap={0} px="16px" w="100%">
               <Box
                 maw={{
                   xs: '100%',
@@ -46,7 +45,7 @@ export const Main = memo(() => {
           </ScrollArea>
         )}
         <TextArea />
-        <Text mb="xs" size="xs" ta="center">
+        <Text my={8} size="xs" ta="center">
           {translate('warning_hallucination')}
         </Text>
       </Stack>

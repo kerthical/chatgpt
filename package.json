@@ -11,6 +11,8 @@
     "lint:prettier": "prettier -wu --ignore-path .gitignore ."
   },
   "dependencies": {
+    "@fontsource-variable/jetbrains-mono": "^5.0.19",
+    "@fontsource-variable/noto-sans-jp": "^5.0.17",
     "@mantine/core": "^7.5.0",
     "@mantine/form": "^7.5.0",
     "@mantine/hooks": "^7.5.0",

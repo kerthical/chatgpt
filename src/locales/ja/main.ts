@@ -4,4 +4,5 @@ export const main = {
   welcome: '今日は何をお手伝いしましょうか？',
   send_message_placeholder: 'ChatGPTにメッセージを送る...',
   warning_hallucination: 'ChatGPTは間違いを犯すことがあります。重要な情報は確認をお考えください。',
+  message_user: 'あなた',
 } as const;

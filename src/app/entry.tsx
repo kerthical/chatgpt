@@ -1,6 +1,8 @@
 import Router from '@/app/router.tsx';
 import '@/styles/global.css';
 import { theme } from '@/styles/theme.ts';
+import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/noto-sans-jp';
 import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import { Notifications } from '@mantine/notifications';
