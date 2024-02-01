@@ -7,6 +7,7 @@ import type { PrimitiveAtom } from 'jotai';
 
 import { useTranslator } from '@/hooks/useTranslator.ts';
 import { Avatar, Center, Group, Stack, Text } from '@mantine/core';
+import { useColorScheme } from '@mantine/hooks';
 import { IconBrandOpenai } from '@tabler/icons-react';
 import { useAtomValue } from 'jotai';
 import { memo } from 'react';
@@ -17,12 +18,13 @@ interface UserMessageProps {
 
 const UserMessage = (props: UserMessageProps) => {
   const translate = useTranslator('main');
+  const colorScheme = useColorScheme();
 
   return (
     <Group align="start" gap="12px" px="20px" py="xs" w="100%" wrap="nowrap">
       <Avatar mih={26} miw={26} size={26} />
       <Stack flex={1} gap={0} w="100%">
-        <Text c="white" fw={700} style={{ userSelect: 'none' }}>
+        <Text c={colorScheme === 'dark' ? 'white' : 'black'} fw={700} style={{ userSelect: 'none' }}>
           {translate('message_user')}
         </Text>
         <Stack
@@ -32,7 +34,7 @@ const UserMessage = (props: UserMessageProps) => {
             lg: 'calc(100%-115px)',
           }}
         >
-          <Text c="gray">{props.message.content}</Text>
+          <Text c={colorScheme === 'dark' ? 'gray' : 'black'}>{props.message.content}</Text>
         </Stack>
       </Stack>
     </Group>
@@ -44,6 +46,8 @@ interface AssistantMessageProps {
 }
 
 const AssistantMessage = (props: AssistantMessageProps) => {
+  const colorScheme = useColorScheme();
+
   return (
     <Group align="start" gap="xs" px="20px" py="xs" w="100%" wrap="nowrap">
       <Center
@@ -59,7 +63,7 @@ const AssistantMessage = (props: AssistantMessageProps) => {
         <IconBrandOpenai color="#000000" height="80%" stroke={1} width="80%" />
       </Center>
       <Stack gap={0} w="100%">
-        <Text c="white" fw={700} style={{ userSelect: 'none' }}>
+        <Text c={colorScheme === 'dark' ? 'white' : 'black'} fw={700} style={{ userSelect: 'none' }}>
           ChatGPT
         </Text>
         <Stack
@@ -69,7 +73,7 @@ const AssistantMessage = (props: AssistantMessageProps) => {
             lg: 'calc(100%-115px)',
           }}
         >
-          <Text c="gray">{props.message.content}</Text>
+          <Text c={colorScheme === 'dark' ? 'gray' : 'black'}>{props.message.content}</Text>
         </Stack>
       </Stack>
     </Group>

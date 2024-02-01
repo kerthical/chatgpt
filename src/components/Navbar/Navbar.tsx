@@ -1,11 +1,11 @@
 import { Conversation } from '@/components/Conversation';
 import { useResponsive } from '@/hooks/useResponsive';
-import { conversationsAtom, newConversationAtom } from '@/stores/conversation.ts';
+import { conversationsAtom, newConversationAtom, onSelectedConversationChangeAtom } from '@/stores/conversation.ts';
 import { isNavbarOpenAtom } from '@/stores/navbar';
 import { ActionIcon, AppShellNavbar, Box, Button, Center, Group, Stack } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
 import { IconBrandOpenai, IconEdit, IconX } from '@tabler/icons-react';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useSetAtom } from 'jotai/index';
 import { memo } from 'react';
 
@@ -17,6 +17,7 @@ export const Navbar = memo(() => {
   const navbarRef = useClickOutside(() => isMobile && setIsNavbarOpen(false));
   const newConversation = useSetAtom(newConversationAtom);
   const conversations = useAtomValue(conversationsAtom);
+  useAtom(onSelectedConversationChangeAtom);
 
   return (
     <AppShellNavbar bg="rgba(0, 0, 0, 0.2)">

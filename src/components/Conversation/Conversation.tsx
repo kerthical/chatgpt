@@ -2,7 +2,7 @@ import type { Conversation as ConversationType } from '@/types/conversation.ts';
 import type { PrimitiveAtom } from 'jotai';
 
 import { useTranslator } from '@/hooks/useTranslator.ts';
-import { deleteConversationAtom, selectedConversationIdAtom } from '@/stores/conversation.ts';
+import { deleteConversationAtom, saveConversationAtom, selectedConversationIdAtom } from '@/stores/conversation.ts';
 import { ActionIcon, Box, Group, Menu, Text, TextInput, Tooltip } from '@mantine/core';
 import { IconArchive, IconDots, IconEdit, IconTrash } from '@tabler/icons-react';
 import { useAtom } from 'jotai';
@@ -19,6 +19,7 @@ export const Conversation = memo<ConversationProps>((props: ConversationProps) =
   const [conversation, setConversation] = useAtom(props.conversation);
   const [selectedConversation, setSelectedConversation] = useAtom(selectedConversationIdAtom);
   const deleteConversation = useSetAtom(deleteConversationAtom);
+  const saveConversation = useSetAtom(saveConversationAtom);
   const [conversationTitle, setConversationTitle] = useState(conversation.title);
   const [isEditing, setEditing] = useState(false);
   const editInputRef = useRef<HTMLInputElement>(null);
@@ -45,6 +46,7 @@ export const Conversation = memo<ConversationProps>((props: ConversationProps) =
           onKeyDown={event => {
             if (event.keyCode === 13) {
               setConversation(prev => ({ ...prev, title: conversationTitle }));
+              saveConversation();
               setEditing(false);
             } else if (event.key === 'Escape') {
               setConversationTitle(conversation.title);
@@ -79,11 +81,9 @@ export const Conversation = memo<ConversationProps>((props: ConversationProps) =
           >
             <Menu position="bottom-start" width={220}>
               <Menu.Target>
-                <Tooltip bg="black" c="white" fw={700} label={translate('show_more')} position="right" withArrow>
-                  <ActionIcon c="gray" onClick={e => e.stopPropagation()} size={20} variant="transparent">
-                    <IconDots />
-                  </ActionIcon>
-                </Tooltip>
+                <ActionIcon c="gray" onClick={e => e.stopPropagation()} size={20} variant="transparent">
+                  <IconDots />
+                </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown className={classes.historyMenu}>
                 <Menu.Item
@@ -112,8 +112,8 @@ export const Conversation = memo<ConversationProps>((props: ConversationProps) =
               <ActionIcon
                 c="gray"
                 onClick={e => {
-                  e.stopPropagation();
                   deleteConversation(conversation.id);
+                  e.stopPropagation();
                 }}
                 size={20}
                 variant="transparent"

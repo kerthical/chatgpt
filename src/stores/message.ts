@@ -3,7 +3,7 @@ import type { AssistantMessage, Attachment, Message } from '@/types/message.ts';
 import type { PrimitiveAtom } from 'jotai';
 
 import { clientAtom } from '@/stores/client.ts';
-import { conversationsAtom, selectedConversationIdAtom } from '@/stores/conversation.ts';
+import { conversationsAtom, saveConversationAtom, selectedConversationIdAtom } from '@/stores/conversation.ts';
 import { atom } from 'jotai';
 import { focusAtom } from 'jotai-optics';
 
@@ -60,87 +60,103 @@ export const sendMessageAtom = atom(null, async (get, set, content: string, atta
   const generatedToolCallAtom = focusAtom(generatedMessageAtom, optic => optic.prop('toolCall'));
 
   set(messagesAtom, prev => [...prev, generatedMessageAtom as PrimitiveAtom<Message>]);
-  for await (const chunk of completion) {
-    const delta = chunk.choices[0]?.delta;
-    if (!delta) continue;
+  try {
+    for await (const chunk of completion) {
+      const delta = chunk.choices[0]?.delta;
+      if (!delta) continue;
 
-    const content = delta?.content;
-    if (content) {
-      set(generatedContentAtom, prev => prev + content);
-    }
-
-    const toolCall = delta?.tool_calls?.[0];
-    if (toolCall) {
-      if (get(generatedToolCallAtom)) {
-        set(generatedToolCallAtom, {
-          uuid: crypto.randomUUID(),
-          name: toolCall.function?.name ?? '',
-          arguments: toolCall.function?.arguments ?? '',
-          output: null,
-        });
-      } else {
-        set(generatedToolCallAtom, prev => ({
-          uuid: crypto.randomUUID(),
-          name: prev?.name ?? '',
-          arguments: (prev?.arguments ?? '') + (toolCall.function?.arguments ?? ''),
-          output: null,
-        }));
+      const content = delta?.content;
+      if (content) {
+        set(generatedContentAtom, prev => prev + content);
       }
-    }
 
-    const finishReason = chunk.choices[0]?.finish_reason;
-    if (finishReason === 'stop') break;
-    if (finishReason === 'length') break;
-    if (finishReason === 'tool_calls') break;
-    if (finishReason === 'content_filter') break;
-    if (finishReason === 'function_call') break;
+      const toolCall = delta?.tool_calls?.[0];
+      if (toolCall) {
+        if (get(generatedToolCallAtom)) {
+          set(generatedToolCallAtom, {
+            uuid: crypto.randomUUID(),
+            name: toolCall.function?.name ?? '',
+            arguments: toolCall.function?.arguments ?? '',
+            output: null,
+          });
+        } else {
+          set(generatedToolCallAtom, prev => ({
+            uuid: crypto.randomUUID(),
+            name: prev?.name ?? '',
+            arguments: (prev?.arguments ?? '') + (toolCall.function?.arguments ?? ''),
+            output: null,
+          }));
+        }
+      }
+
+      const finishReason = chunk.choices[0]?.finish_reason;
+      if (finishReason === 'stop') break;
+      if (finishReason === 'length') break;
+      if (finishReason === 'tool_calls') break;
+      if (finishReason === 'content_filter') break;
+      if (finishReason === 'function_call') break;
+    }
+  } finally {
+    set(generatingTaskAtom, null);
   }
 
-  const titleResponse = await client.chat.completions.create({
-    model: 'gpt-3.5-turbo-1106',
-    max_tokens: 128,
-    messages: [
-      {
-        role: 'user',
-        content:
-          'Based on the conversation below, please think of a title in the same language as the conversation that succinctly captures the content in about 3 to 5 words.\n\n' +
-          get(messagesAtom)
-            .map(m => {
-              const msg = get(m);
-              return msg.role + ': ' + msg.content;
-            })
-            .join('\n---\n'),
-      },
-    ],
-    stream: true,
-  });
+  if (get(selectedConversationIdAtom) === null) {
+    const titleResponse = await client.chat.completions.create({
+      model: 'gpt-3.5-turbo-1106',
+      max_tokens: 128,
+      messages: [
+        {
+          role: 'user',
+          content:
+            'Based on the conversation below, please think of a title in the same language as the conversation that succinctly captures the content in about 3 to 5 words.\n\n' +
+            get(messagesAtom)
+              .map(m => {
+                const msg = get(m);
+                return msg.role + ': ' + msg.content;
+              })
+              .join('\n---\n'),
+        },
+      ],
+      stream: true,
+    });
 
-  const newConversationId = crypto.randomUUID();
-  const generatedConversationAtom = atom<Conversation>({
-    id: newConversationId,
-    title: '',
-    modelId: 'gpt-4-turbo-preview',
-    messages: get(messagesAtom).map(m => get(m)),
-  });
+    const newConversationId = crypto.randomUUID();
+    const generatedConversationAtom = atom<Conversation>({
+      id: newConversationId,
+      title: '',
+      modelId: 'gpt-4-turbo-preview',
+      messages: get(messagesAtom).map(m => get(m)),
+    });
 
-  const generatedTitleAtom = focusAtom(generatedConversationAtom, optic => optic.prop('title'));
+    const generatedTitleAtom = focusAtom(generatedConversationAtom, optic => optic.prop('title'));
 
-  set(conversationsAtom, prev => [...prev, generatedConversationAtom]);
-  set(selectedConversationIdAtom, newConversationId);
-  for await (const chunk of titleResponse) {
-    const delta = chunk.choices[0]?.delta;
-    if (!delta) continue;
+    set(conversationsAtom, prev => [...prev, generatedConversationAtom]);
+    set(selectedConversationIdAtom, newConversationId);
+    for await (const chunk of titleResponse) {
+      const delta = chunk.choices[0]?.delta;
+      if (!delta) continue;
 
-    const content = delta?.content;
-    if (content) {
-      set(generatedTitleAtom, prev => prev + content);
+      const content = delta?.content;
+      if (content) {
+        set(generatedTitleAtom, prev => prev + content);
+      }
+
+      const finishReason = chunk.choices[0]?.finish_reason;
+      if (finishReason === 'stop') break;
+      if (finishReason === 'length') break;
+      if (finishReason === 'tool_calls') break;
+      if (finishReason === 'content_filter') break;
+      if (finishReason === 'function_call') break;
     }
-
-    const finishReason = chunk.choices[0]?.finish_reason;
-    if (finishReason === 'stop') break;
-    if (finishReason === 'length') break;
-    if (finishReason === 'tool_calls') break;
-    if (finishReason === 'content_filter') break;
-    if (finishReason === 'function_call') break;
+    set(saveConversationAtom);
+  } else {
+    const selectedConversationId = get(selectedConversationIdAtom);
+    const selectedConversationAtom = get(conversationsAtom).find(c => get(c).id === selectedConversationId);
+    if (!selectedConversationAtom) return;
+    set(selectedConversationAtom, prev => ({
+      ...prev,
+      messages: get(messagesAtom).map(m => get(m)),
+    }));
+    set(saveConversationAtom);
   }
 });

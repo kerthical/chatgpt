@@ -1,10 +1,10 @@
 import { FlexForm } from '@/components/FlexForm';
 import { useTranslator } from '@/hooks/useTranslator.ts';
-import { sendMessageAtom } from '@/stores/message.ts';
+import { generatingTaskAtom, sendMessageAtom } from '@/stores/message.ts';
 import { ActionIcon, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useColorScheme } from '@mantine/hooks';
-import { IconArrowUp } from '@tabler/icons-react';
+import { IconArrowUp, IconX } from '@tabler/icons-react';
+import { useAtomValue } from 'jotai';
 import { useSetAtom } from 'jotai/index';
 import { memo } from 'react';
 
@@ -13,7 +13,7 @@ import * as classes from './TextArea.css.ts';
 export const TextArea = memo(() => {
   const translate = useTranslator('main');
   const sendMessage = useSetAtom(sendMessageAtom);
-  const colorScheme = useColorScheme();
+  const generatingTask = useAtomValue(generatingTaskAtom);
   const form = useForm({
     initialValues: {
       message: '',
@@ -54,28 +54,35 @@ export const TextArea = memo(() => {
         pr="0.5rem"
         radius="lg"
         rightSection={
-          <ActionIcon
-            c="black"
-            className={classes.sendButton}
-            disabled={!form.isValid()}
-            size={30}
-            type="submit"
-            variant="white"
-          >
-            <IconArrowUp className={classes.sendButtonIcon} />
-          </ActionIcon>
+          generatingTask ? (
+            <ActionIcon
+              c="black"
+              className={classes.sendButton}
+              disabled={generatingTask === true}
+              onClick={() => {
+                if (generatingTask !== true) {
+                  generatingTask.abort();
+                }
+              }}
+              size={30}
+              variant="white"
+            >
+              <IconX className={classes.sendButtonIcon} />
+            </ActionIcon>
+          ) : (
+            <ActionIcon
+              c="black"
+              className={classes.sendButton}
+              disabled={!form.isValid()}
+              size={30}
+              type="submit"
+              variant="white"
+            >
+              <IconArrowUp className={classes.sendButtonIcon} />
+            </ActionIcon>
+          )
         }
         size="lg"
-        styles={{
-          input: {
-            fontSize: '16px',
-            color: 'white',
-            background: 'transparent',
-            borderColor: colorScheme === 'dark' ? 'rgba(217, 217, 227, 0.2)' : 'rgba(0, 0, 0, 0.2)',
-            padding: '14px 0px 14px 16px',
-            lineHeight: '24px',
-          },
-        }}
         w="100%"
         {...form.getInputProps('message')}
       />
