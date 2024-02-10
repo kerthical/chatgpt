@@ -28,9 +28,9 @@ export const Header = memo(() => {
         <Group gap="xs">
           {!isNavbarOpen && (
             <ActionIcon
-              ml="xs"
               bg="transparent"
               c={colorScheme === 'dark' ? 'white' : 'black'}
+              ml="xs"
               onClick={() => newConversation()}
               p={6}
               size={36}

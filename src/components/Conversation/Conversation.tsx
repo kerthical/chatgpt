@@ -81,7 +81,7 @@ export const Conversation = memo<ConversationProps>((props: ConversationProps) =
           >
             <Menu position="bottom-start" width={220}>
               <Menu.Target>
-                <ActionIcon c="gray" onClick={e => e.stopPropagation()} size={18} p={0} variant="transparent">
+                <ActionIcon c="gray" onClick={e => e.stopPropagation()} p={0} size={18} variant="transparent">
                   <IconDots size={18} />
                 </ActionIcon>
               </Menu.Target>
@@ -115,8 +115,8 @@ export const Conversation = memo<ConversationProps>((props: ConversationProps) =
                   deleteConversation(conversation.id);
                   e.stopPropagation();
                 }}
-                size={18}
                 p={0}
+                size={18}
                 variant="transparent"
               >
                 <IconArchive size={18} />
