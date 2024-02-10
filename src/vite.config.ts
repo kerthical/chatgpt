@@ -1,5 +1,6 @@
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import react from '@vitejs/plugin-react';
+import cssnano from 'cssnano';
 import jotaiDebugLabel from 'jotai/babel/plugin-debug-label';
 import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh';
 import path from 'path';
@@ -17,6 +18,15 @@ export default defineConfig({
     vanillaExtractPlugin(),
     splitVendorChunkPlugin(),
   ],
+  css: {
+    postcss: {
+      plugins: [
+        cssnano({
+          preset: 'advanced',
+        }),
+      ],
+    },
+  },
   build: {
     outDir: '../dist',
     emptyOutDir: true,

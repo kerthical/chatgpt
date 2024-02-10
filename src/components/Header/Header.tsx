@@ -28,11 +28,15 @@ export const Header = memo(() => {
         <Group gap="xs">
           {!isNavbarOpen && (
             <ActionIcon
+              ml="xs"
               bg="transparent"
               c={colorScheme === 'dark' ? 'white' : 'black'}
               onClick={() => newConversation()}
               p={6}
-              size="lg"
+              size={36}
+              style={{
+                borderColor: 'rgba(217, 217, 227, 0.15)',
+              }}
               variant="default"
               visibleFrom="sm"
             >

@@ -7,7 +7,7 @@
     "build": "vite build -c src/vite.config.ts",
     "lint": "pnpm lint:eslint && pnpm lint:tsc && pnpm lint:prettier",
     "lint:tsc": "tsc --noEmit",
-    "lint:eslint": "eslint --fix --ignore-path .gitignore '**/*.{js,jsx,ts,tsx}'",
+    "lint:eslint": "eslint --fix --no-error-on-unmatched-pattern --ignore-path .gitignore '**/*.{js,jsx,ts,tsx}'",
     "lint:prettier": "prettier -wu --ignore-path .gitignore ."
   },
   "dependencies": {
@@ -35,12 +35,15 @@
     "@typescript-eslint/parser": "^6.19.1",
     "@vanilla-extract/vite-plugin": "^4.0.1",
     "@vitejs/plugin-react": "^4.2.1",
+    "cssnano": "^6.0.3",
+    "cssnano-preset-advanced": "^6.0.3",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-perfectionist": "^2.5.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-unused-imports": "^3.0.0",
+    "postcss": "^8.4.35",
     "prettier": "^3.2.4",
     "typescript": "^5.3.3",
     "vite": "^5.0.12"

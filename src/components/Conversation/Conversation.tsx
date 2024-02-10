@@ -28,7 +28,7 @@ export const Conversation = memo<ConversationProps>((props: ConversationProps) =
 
   useEffect(() => {
     setConversationTitle(conversation.title);
-  }, [conversationTitle]);
+  }, [conversation.title]);
 
   return (
     <Box
@@ -81,8 +81,8 @@ export const Conversation = memo<ConversationProps>((props: ConversationProps) =
           >
             <Menu position="bottom-start" width={220}>
               <Menu.Target>
-                <ActionIcon c="gray" onClick={e => e.stopPropagation()} size={20} variant="transparent">
-                  <IconDots />
+                <ActionIcon c="gray" onClick={e => e.stopPropagation()} size={18} p={0} variant="transparent">
+                  <IconDots size={18} />
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown className={classes.historyMenu}>
@@ -115,10 +115,11 @@ export const Conversation = memo<ConversationProps>((props: ConversationProps) =
                   deleteConversation(conversation.id);
                   e.stopPropagation();
                 }}
-                size={20}
+                size={18}
+                p={0}
                 variant="transparent"
               >
-                <IconArchive />
+                <IconArchive size={18} />
               </ActionIcon>
             </Tooltip>
           </Group>

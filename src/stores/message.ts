@@ -4,6 +4,7 @@ import type { PrimitiveAtom } from 'jotai';
 
 import { clientAtom } from '@/stores/client.ts';
 import { conversationsAtom, saveConversationAtom, selectedConversationIdAtom } from '@/stores/conversation.ts';
+import { selectedModelIdAtom } from '@/stores/model.ts';
 import { atom } from 'jotai';
 import { focusAtom } from 'jotai-optics';
 
@@ -39,7 +40,7 @@ export const sendMessageAtom = atom(null, async (get, set, content: string, atta
   set(generatingTaskAtom, true);
   const client = get(clientAtom);
   const completion = await client.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: get(selectedModelIdAtom),
     stream: true,
     messages: get(messagesAtom)
       .map(m => get(m))

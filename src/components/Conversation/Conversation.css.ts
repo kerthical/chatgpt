@@ -25,7 +25,7 @@ const history = style({
   cursor: 'pointer',
 });
 
-export const historySelected = style([history, { background: '#343541' }]);
+export const historySelected = style([history, { background: '#262626' }]);
 export const historyUnselected = style([
   history,
   {
@@ -63,7 +63,7 @@ export const historyOverlaySelected = style([
   historyOverlay,
   {
     width: '80px',
-    background: 'linear-gradient(to left, #343541 40%, transparent)',
+    background: 'linear-gradient(to left, #262626 40%, transparent)',
   },
 ]);
 
